@@ -38,7 +38,7 @@ git switch -c KJW
 git push --set-upstream origin KJW
 ```
 
-- 중간에 다른 브랜치로 바꿔서 코드를 확인하고 싶으시면 아래 명령어를 이용하시면 됩니다. 브랜치를 옴ㄹ겨서 확인하시고, 자기 branch로 switch해서 돌아오는걸 잊지 마세요. 
+- 중간에 다른 브랜치로 바꿔서 코드를 확인하고 싶으시면 아래 명령어를 이용하시면 됩니다. 브랜치를 옮겨서 확인하시고, 자기 branch로 switch해서 돌아오는걸 잊지 마세요. 
 ```bash
 # git checkout [본인브랜치 이름(이니셜)]
 # 예시 
