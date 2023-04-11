@@ -30,7 +30,7 @@ python3 code/inference.py
 ```bash
 # git checkout [본인브랜치 이름(이니셜)]
 # 예시 
-git checkout KJW
+git switch KJW
 ```
 
 3. 이번 프로젝트의 commit 단위는 **한번 submission**할 때 마다  커밋 하는 것을 원칙으로 합니다. 아래 예시를 보고 **코드 수정 내용, 점수, 제출 시간**이 들어가도록 commit 해주시면 됩니다. 
