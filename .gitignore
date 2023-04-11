@@ -1,5 +1,3 @@
 model.pt
-data/dev.csv
-data/train.csv
-data/test.csv
+data/*
 output.csv
