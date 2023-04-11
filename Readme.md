@@ -26,12 +26,19 @@ python3 code/inference.py
     -  만약 `.gitignore`에 없으면 파일을 추가해주세요. 
     - 기본적으로 data안에 들어가 있는 모든 파일들은 push 했을 때 remote 주소로 올라가지 않으니 train, test, dev 파일들은 생성시 data폴더를 만들어 해당 폴더 내부에 넣어주시는 걸 추천합니다.
 
-2. `git commit` 이전에 본인의 branch가 맞는지 확인해주세요. (branch가 본인의 initial과 같은지 확인) 만약 아니라면 아래 명령어를 통해 본인의 브랜치로 반드시 변경해주세요.
+2. `git commit` 이전에 본인의 branch가 맞는지 확인해주세요. (branch가 본인의 initial과 같은지 확인) 만약 아니라면 아래 명령어를 통해 본인의 브랜치로 반드시 변경해주세요. 아래는 초기 설정 예시입니다.
 ```bash
 # git checkout [본인브랜치 이름(이니셜)]
 # 예시 
 git switch -c KJW
 ```
+- 이후 push할 origin 브랜치를 연결해줍니다. 
+```bash
+# git push --set-upstream [본인브랜치 이름(이니셜)]
+git push --set-upstream origin KJW
+```
+
+- 중간에 다른 브랜치로 바꿔서 코드를 확인하고 싶으시면 아래 명령어를 이용하시면 됩니다. 브랜치를 옴ㄹ겨서 확인하시고, 자기 branch로 switch해서 돌아오는걸 잊지 마세요. 
 ```bash
 # git checkout [본인브랜치 이름(이니셜)]
 # 예시 
