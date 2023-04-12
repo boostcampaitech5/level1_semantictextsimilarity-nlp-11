@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
 
     args = TrainingArguments(
-        "E:/nlp/checkpoint/baseline_Test",
+        "E:/nlp/checkpoint/baseline_Test_",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
         learning_rate=5e-6, #0.000005
