@@ -11,6 +11,7 @@ tokenizer = RegexTokenizer()
 stopwords = pd.read_csv('./data/stopwords.csv',encoding='cp949')
 
 
+
 def preprocess_text(text):
     # normalize repeated characters using soynlp library
     text = repeat_normalize(text, num_repeats=2)
@@ -58,9 +59,9 @@ class Infer_TextDataset(torch.utils.data.Dataset):
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/best_acc_mdeberta_preproceess_include_en/checkpoint-8162')
+    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/add_dev/discriminator_include_en_10epoch/checkpoint-70')
     model.to(device)
-    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],None,None,max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
     test_dataloader = DataLoader(dataset=test_textDataset,
                                  batch_size=4,
                                  num_workers=0,
@@ -78,4 +79,4 @@ if __name__ == '__main__':
     #predictions = list(round(float(i), 1) for i in torch.cat(output))
     output = pd.read_csv('./data/sample_submission.csv')
     output['target'] = score
-    output.to_csv('pretest.csv', index=False)
+    output.to_csv('dev_add_dis_preproceess_include_en.csv', index=False)
