@@ -50,6 +50,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
             target_columns (string or list, optional): 레이블 데이터를 갖는 column의 이름
             delete_columns (string or list, optional): 제거할 column의 이름
         """
+        self.state = state
         if state == 'train':
             self.data = pd.read_csv(data_file)
             #self.add_data = pd.read_csv('./data/preprocessed_data_sin_v2_filter.csv')
@@ -129,7 +130,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
     def preprocessing(self, data):
         data = data.drop(columns=self.delete_columns)
         try:
-            if state == "train":
+            if self.state == "train":
                 targets = data[self.target_columns].apply(lambda x: min(5, round(max(0, x + 0.3),2)) if x >= 2.5 else min(5, round(max(0, x - 0.3),2))).values.tolist()
             else:
                 targets = data[self.target_columns].values.tolist()
@@ -153,7 +154,7 @@ if __name__ == '__main__':
 
 
     args = TrainingArguments(
-        "./checkpoint/baseline_Test_fine_3.073982620831417e-05",
+        "./checkpoint/baseline_Test_fine_3.073982620831417e-05/checkpoint-4664",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
         learning_rate=0.00003073982620831417,
