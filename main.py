@@ -129,7 +129,10 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
     def preprocessing(self, data):
         data = data.drop(columns=self.delete_columns)
         try:
-            targets = data[self.target_columns].apply(lambda x: min(5, round(max(0, x + 0.3),2)) if x >= 2.5 else min(5, round(max(0, x - 0.3),2))).values.tolist()
+            if state == "train":
+                targets = data[self.target_columns].apply(lambda x: min(5, round(max(0, x + 0.3),2)) if x >= 2.5 else min(5, round(max(0, x - 0.3),2))).values.tolist()
+            else:
+                targets = data[self.target_columns].values.tolist()
         except:
             targets = []
         inputs = self.tokenizing(data)
