@@ -41,7 +41,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
             target_columns (string or list, optional): 레이블 데이터를 갖는 column의 이름
             delete_columns (string or list, optional): 제거할 column의 이름
             max_length (int, optional): 최대 텍스트 길이
-            model_name ()
+            model_name (string, optional): 사용할 토크나이저의 모델 이름
         """
         self.data = pd.read_csv(data_file)
         self.text_columns = text_columns
@@ -52,40 +52,50 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         self.inputs, self.targets = self.preprocessing(self.data)
 
     def __getitem__(self, idx):
-        if len(self.targets) == 0:
-            return torch.tensor(self.inputs[idx])
-        else:
+        """
+        데이터셋의 특정 인덱스(idx)에 해당하는 데이터를 반환하는 메서드
+        """
+        if len(self.targets) == 0: # 레이블이 없는 경우
+            return torch.tensor(self.inputs[idx]) # 텍스트 데이터만 반환
+        else: # 레이블이 있는 경우
+            # 딕셔너리 형태로 텍스트 데이터와 레이블을 반환
             return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(self.targets[idx])}
 
     def __len__(self):
+        """
+        데이터셋의 총 데이터 개수를 반환하는 메서드
+        """
         return len(self.inputs)
 
     def tokenizing(self, dataframe):
+        """
+        데이터프레임(dataframe)을 입력으로 받아, 텍스트 데이터를 토크나이징하여 모델의 입력 형식에 맞게 변환하는 메서드
+        """
         data=[]
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
-            text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
+            # text_columns에 지정된 열들의 값을 [SEP]으로 구분하여 이어붙인다.
+            text = '[SEP]'.join([item[text_column] for text_column in self.text_columns]) # self.text_columns 예) ['sentence_1', 'sentence_2']
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True, max_length=self.max_length)
-            data.append(outputs['input_ids'])
+            data.append(outputs['input_ids']) # 토크나이징된 input_ids를 반환
         return data
 
     def preprocessing(self, data):
-        data = data.drop(columns=self.delete_columns)
+        """
+        데이터프레임('data')를 입력 받아, 전처리를 수행하는 메서드
+        """
+        data = data.drop(columns=self.delete_columns) # 삭제할 열을 제거
         try:
-            targets = data[self.target_columns].values.tolist()
+            targets = data[self.target_columns].values.tolist() # 레이블 열의 값을 리스트로 변환
         except:
             targets = []
-        inputs = self.tokenizing(data)
+        inputs = self.tokenizing(data) # 텍스트 데이터를 토크나이징
         return inputs, targets
 
 if __name__ == '__main__':
     seed_everything(42)
     wandb.login(key='c0d96b72557660bd63642b07a905e93575f72573')
 
-    sweep_config = {
-        'method': 'random'
-    }
-
-    # hyperparameters
+    # 튜닝할 하이퍼 파라미터의 범위를 지정
     parameters_dict = {
         'epochs': {
             'value': 8
@@ -95,26 +105,34 @@ if __name__ == '__main__':
         },
         'learning_rate': {
             'distribution': 'log_uniform_values',
-            'min': 1e-5,
-            'max': 5e-5
+            'min': 8e-6,
+            'max': 4e-5
         },
         'weight_decay': {
-            'values': [0.4,0.5]
+            'values': [0.2,0.3,0.4,0.5]
         },
     }
-    sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project="mdeberta-v3-base-kor-further_weight_decay")
 
-    model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
+    # 하이퍼 파라미터 sweep config
+    sweep_config = {
+        'method': 'random',
+        'parameters' = parameters_dict
+    }
 
-    #model = transformers.AutoModelForSequenceClassification.from_pretrained(
-    #   'C:/Users/tm011/PycharmProjects/NLP_COMP/checkpoint/checkpoint-6993')
-    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    # wandb를 사용하여 sweep를 생성하고, sweep_id를 반환받는다.
+    sweep_id = wandb.sweep(sweep_config, project="monologg_koelectra-base-finetuned-nsmc_04_13")
+
+    # model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
+    
+    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-finetuned-nsmc")
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-finetuned-nsmc")
 
 
     def model_init():
-        model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
+        """
+        선학습된 모델 로드 후 분류를 위한 마지막 레이어 추가(num_labels=1)
+        """
+        model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
         return model
 
 
@@ -123,7 +141,7 @@ if __name__ == '__main__':
             config = wandb.config
             t = config.learning_rate
             args = TrainingArguments(
-                f"E:/nlp/checkpoint/baseline_Test_fine_{t}",
+                f"./checkpoint/baseline_Test_fine_{t}",
                 evaluation_strategy="epoch",
                 save_strategy="epoch",
                 report_to='wandb',
