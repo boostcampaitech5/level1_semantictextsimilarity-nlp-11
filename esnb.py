@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-df1 = pd.read_csv('./data/output_sota.csv')
-df2 = pd.read_csv('./data/output_2d.csv')
+df1 = pd.read_csv('./output_dis_preprocess_re.csv')
+df2 = pd.read_csv('./output_mdeberta_preprocess_re.csv')
 
 a = np.array(df1)
 b = np.array(df2)
@@ -17,6 +17,6 @@ print(a[:,0])
 df3 = pd.DataFrame({'id':a[:,0],
                              'target':total})
 
-df3.to_csv('./data/esnb.csv')
+df3.to_csv('./data/esnb_dis_mdeberta.csv')
 
 
