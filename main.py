@@ -53,11 +53,24 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.inputs, self.targets = self.preprocessing(self.data)
         self.stopwords = pd.read_csv('./data/stopwords.csv', encoding='cp949')
+
     def __getitem__(self, idx):
         if len(self.targets) == 0:
             return torch.tensor(self.inputs[idx])
         else:
-            return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(self.targets[idx])}
+            if self.state=='train':
+                target_val = self.targets[idx]
+                if self.delete_columns is not None and self.data.iloc[idx][self.delete_columns] == 1:
+                    if random.random() <= 0.2:
+                        target_val += random.uniform(0.0, 0.1)
+                else:
+                    if random.random() <= 0.2:
+                        target_val -= random.uniform(0.0, 0.1)
+
+                target_val = max(min(target_val, 5.0), 0.0)
+                return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(target_val)}
+            else:
+                return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(self.targets[idx])}
 
     def __len__(self):
         return len(self.inputs)
@@ -67,20 +80,11 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         words = [word for word in words if word not in stopwords]
         return ' '.join(words)
 
-    def tokenizing(self, dataframe, mask_prob=0.1):
-        if self.state == 'val':
-            mask_prob = -999
+    def tokenizing(self, dataframe):
         data = []
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
             text = '[SEP]'.join([self.preprocess_text(item[text_column]) for text_column in self.text_columns])
-            segments = text.split('[SEP]')
-            for seg_idx, segment in enumerate(segments):
-                words = segment.split()
-                for i, word in enumerate(words):
-                    if '[SEP]' not in word and random.random() < mask_prob:
-                        words[i] = '[MASK]'
-                segments[seg_idx] = ' '.join(words)
-            text = '[SEP]'.join(segments)
+
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True,
                                      max_length=self.max_length)
             data.append(outputs['input_ids'])
@@ -119,17 +123,11 @@ if __name__ == '__main__':
     #model = AutoModelForSequenceClassification.from_pretrained("E:/nlp/checkpoint/best_acc/checkpoint-16317",num_labels=1,ignore_mismatched_sizes=True)
 
 
-
-
     Train_textDataset = Train_val_TextDataset('train','./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
     Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
 
-
-
-
-
     args = TrainingArguments(
-        "E:/nlp/checkpoint/best_acc_/dis_10ep_text_pre_random_masking",
+        "E:/nlp/checkpoint/best_acc_/koelectra-labelsoomthing_0.4_0.1_0.2",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
         learning_rate=0.00002860270719188072, #0.000005
