@@ -1,6 +1,8 @@
 import os
 
 import pandas as pd
+from soynlp.normalizer import repeat_normalize
+from soynlp.tokenizer import RegexTokenizer
 from tqdm.auto import tqdm
 import transformers
 import torch
@@ -46,7 +48,8 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         self.max_length = max_length
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.inputs, self.targets = self.preprocessing(self.data)
-
+        self.stopwords = pd.read_csv('./data/stopwords.csv', encoding='cp949')
+        self.Regextokenizer = RegexTokenizer()
     def __getitem__(self, idx):
         if len(self.targets) == 0:
             return torch.tensor(self.inputs[idx])
@@ -65,7 +68,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         data = []
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
 
-            text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
+            text = '[SEP]'.join([self.preprocess_text(item[text_column]) for text_column in self.text_columns])
             ##불용어 제거
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True,
                                      max_length=self.max_length)
@@ -81,31 +84,52 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         inputs = self.tokenizing(data)
         return inputs, targets
 
-
+    def preprocess_text(self,text):
+        # normalize repeated characters using soynlp library
+        text = repeat_normalize(text, num_repeats=2)
+        # remove stopwords
+        text = ' '.join([token for token in text.split() if not token in stopwords])
+        # remove special characters and numbers
+        # text = re.sub('[^가-힣 ]', '', text)
+        # text = re.sub('[^a-zA-Zㄱ-ㅎ가-힣]', '', text)
+        # tokenize text using soynlp tokenizer
+        tokens = self.Regextokenizer.tokenize(text)
+        # lowercase all tokens
+        tokens = [token.lower() for token in tokens]
+        # join tokens back into sentence
+        text = ' '.join(tokens)
+        # kospacing_sent = spacing(text)
+        return text
 
 if __name__ == '__main__':
 
-    seed_everything(42)
-    model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
+    seed_everything(43)
+    model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-v3-discriminator",num_labels=1,ignore_mismatched_sizes=True)
     #model = AutoModelForSequenceClassification.from_pretrained("E:/nlp/checkpoint/best_acc/checkpoint-16317",num_labels=1,ignore_mismatched_sizes=True)
 
-    Train_textDataset = Train_val_TextDataset('train','./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
-    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+
+
+
+    Train_textDataset = Train_val_TextDataset('train','./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
+    Val_textDataset = Train_val_TextDataset('val','./data/val.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
+
+
+
 
 
     args = TrainingArguments(
-        "E:/nlp/checkpoint/best_acc_mdeberta",
+        "E:/nlp/checkpoint/best_acc_/discriminator_include_en_10epoch",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
-        learning_rate=0.00002340865224868444, #0.000005
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
-        num_train_epochs=8,
+        learning_rate=0.00002860270719188072, #0.000005
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
+        num_train_epochs=10,
         weight_decay=0.5,
         load_best_model_at_end=True,
         dataloader_num_workers = 4,
         logging_steps=200,
-        seed = 42
+        seed = 43
     )
 
     trainer = Trainer(
