@@ -119,7 +119,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         data = []
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
 
-            text = '[SEP]'.join([self.preprocess_text(item[text_column]) for text_column in self.text_columns])
+            text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
             ##불용어 제거
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True,
                                      max_length=self.max_length)
@@ -129,7 +129,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
     def preprocessing(self, data):
         data = data.drop(columns=self.delete_columns)
         try:
-            targets = data[self.target_columns].values.tolist()
+            targets = data[self.target_columns].apply(lambda x: min(5, round(max(0, x + 0.3),2)) if x >= 2.5 else min(5, round(max(0, x - 0.3),2))).values.tolist()
         except:
             targets = []
         inputs = self.tokenizing(data)
