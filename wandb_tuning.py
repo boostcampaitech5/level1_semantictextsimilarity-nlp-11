@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
     # 하이퍼 파라미터 sweep config
     sweep_config = {
-        'method': 'random',
+        'method': 'random'
         'parameters' = parameters_dict
     }
 
