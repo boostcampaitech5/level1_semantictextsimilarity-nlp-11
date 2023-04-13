@@ -17,6 +17,9 @@ from scipy.stats import pearsonr
 import random
 import nltk
 from nltk.corpus import stopwords
+
+stopwords = pd.read_csv('./data/stopwords.csv',encoding='cp949')
+Regextokenizer = RegexTokenizer()
 def compute_pearson_correlation(pred):
     preds = pred.predictions.flatten()
     labels = pred.label_ids.flatten()
@@ -36,7 +39,8 @@ def seed_everything(seed):
 
 class Train_val_TextDataset(torch.utils.data.Dataset):
     def __init__(self,state,data_file, text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
-        if state == 'train':
+        self.state = state
+        if self.state == 'train':
             self.data = pd.read_csv(data_file)
             #self.add_data = pd.read_csv('./data/preprocessed_data_sin_v2_filter.csv')
             #self.data = pd.concat([self.data,self.add_data])
@@ -49,7 +53,6 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.inputs, self.targets = self.preprocessing(self.data)
         self.stopwords = pd.read_csv('./data/stopwords.csv', encoding='cp949')
-        self.Regextokenizer = RegexTokenizer()
     def __getitem__(self, idx):
         if len(self.targets) == 0:
             return torch.tensor(self.inputs[idx])
@@ -64,12 +67,20 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         words = [word for word in words if word not in stopwords]
         return ' '.join(words)
 
-    def tokenizing(self, dataframe):
+    def tokenizing(self, dataframe, mask_prob=0.1):
+        if self.state == 'val':
+            mask_prob = -999
         data = []
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
-
             text = '[SEP]'.join([self.preprocess_text(item[text_column]) for text_column in self.text_columns])
-            ##불용어 제거
+            segments = text.split('[SEP]')
+            for seg_idx, segment in enumerate(segments):
+                words = segment.split()
+                for i, word in enumerate(words):
+                    if '[SEP]' not in word and random.random() < mask_prob:
+                        words[i] = '[MASK]'
+                segments[seg_idx] = ' '.join(words)
+            text = '[SEP]'.join(segments)
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True,
                                      max_length=self.max_length)
             data.append(outputs['input_ids'])
@@ -88,12 +99,12 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         # normalize repeated characters using soynlp library
         text = repeat_normalize(text, num_repeats=2)
         # remove stopwords
-        text = ' '.join([token for token in text.split() if not token in stopwords])
+        #text = ' '.join([token for token in text.split() if not token in stopwords])
         # remove special characters and numbers
         # text = re.sub('[^가-힣 ]', '', text)
         # text = re.sub('[^a-zA-Zㄱ-ㅎ가-힣]', '', text)
         # tokenize text using soynlp tokenizer
-        tokens = self.Regextokenizer.tokenize(text)
+        tokens = Regextokenizer.tokenize(text)
         # lowercase all tokens
         tokens = [token.lower() for token in tokens]
         # join tokens back into sentence
@@ -111,14 +122,14 @@ if __name__ == '__main__':
 
 
     Train_textDataset = Train_val_TextDataset('train','./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
-    Val_textDataset = Train_val_TextDataset('val','./data/val.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
+    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
 
 
 
 
 
     args = TrainingArguments(
-        "E:/nlp/checkpoint/best_acc_/discriminator_include_en_10epoch",
+        "E:/nlp/checkpoint/best_acc_/dis_10ep_text_pre_random_masking",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
         learning_rate=0.00002860270719188072, #0.000005
