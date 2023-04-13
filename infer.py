@@ -35,9 +35,9 @@ class Infer_TextDataset(torch.utils.data.Dataset):
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/lighthouse/mdeberta-v3-base-kor-further/checkpoint-11655')
+    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/best_acc_add_data/checkpoint-23625')
     model.to(device)
-    test_textDataset = Infer_TextDataset('./test.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
     test_dataloader = DataLoader(dataset=test_textDataset,
                                  batch_size=4,
                                  num_workers=0,
@@ -53,6 +53,6 @@ if __name__ == '__main__':
             score.extend(y_pred)
     score = list(round(float(i), 1) for i in score)
     #predictions = list(round(float(i), 1) for i in torch.cat(output))
-    output = pd.read_csv('sample_submission.csv')
+    output = pd.read_csv('./data/sample_submission.csv')
     output['target'] = score
-    output.to_csv('output3.csv', index=False)
+    output.to_csv('output_add.csv', index=False)

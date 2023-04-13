@@ -1,3 +1,6 @@
+import os
+import random
+
 import pandas as pd
 from tqdm.auto import tqdm
 import transformers
@@ -12,7 +15,14 @@ import numpy as np
 from scipy.stats import pearsonr
 import wandb
 
-
+def seed_everything(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = True
 def compute_pearson_correlation(pred):
     preds = pred.predictions.flatten()
     labels = pred.label_ids.flatten()
@@ -55,8 +65,8 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         return inputs, targets
 
 if __name__ == '__main__':
-
-    wandb.login(key='키값 넣으세요')
+    seed_everything(42)
+    wandb.login(key='38e2b6604d2670c05fd7f22edb2a711faf495709')
 
     sweep_config = {
         'method': 'random'
@@ -65,29 +75,29 @@ if __name__ == '__main__':
     # hyperparameters
     parameters_dict = {
         'epochs': {
-            'value': 7
+            'value': 8
         },
         'batch_size': {
-            'values': [4,8, 16]
+            'values': [4,8,16]
         },
         'learning_rate': {
             'distribution': 'log_uniform_values',
-            'min': 1e-6,
+            'min': 1e-5,
             'max': 5e-5
         },
         'weight_decay': {
-            'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
+            'values': [0.4,0.5]
         },
     }
     sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project='mdeberta-v3-base-kor-further__')
+    sweep_id = wandb.sweep(sweep_config, project="mdeberta-v3-base-kor-further_weight_decay")
 
     model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
 
     #model = transformers.AutoModelForSequenceClassification.from_pretrained(
     #   'C:/Users/tm011/PycharmProjects/NLP_COMP/checkpoint/checkpoint-6993')
-    Train_textDataset = Train_val_TextDataset('./train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
-    Val_textDataset = Train_val_TextDataset('./dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
 
 
     def model_init():
@@ -100,7 +110,7 @@ if __name__ == '__main__':
             config = wandb.config
             t = config.learning_rate
             args = TrainingArguments(
-                f"E:/nlp/checkpoint/baseline_Test_{t}",
+                f"E:/nlp/checkpoint/baseline_Test_fine_{t}",
                 evaluation_strategy="epoch",
                 save_strategy="epoch",
                 report_to='wandb',
@@ -112,7 +122,6 @@ if __name__ == '__main__':
                 load_best_model_at_end=True,
                 dataloader_num_workers=4,
                 logging_steps=200,
-                bf16=True
             )
             trainer = Trainer(
                 model_init = model_init,
