@@ -131,9 +131,9 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         data = data.drop(columns=self.delete_columns)
         try:
             if self.state == "train":
-                targets = data[self.target_columns].apply(lambda x: min(5, round(max(0, x + 0.1),2)) if x >= 2.5 else min(5, round(max(0, x - 0.1),2))).values.tolist()
+                targets = data[self.target_columns].apply(lambda x: x*2).values.tolist()
             else:
-                targets = data[self.target_columns].values.tolist()
+                targets = data[self.target_columns].apply(lambda x: x*2).values.tolist()
         except:
             targets = []
         inputs = self.tokenizing(data)
@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
 
     args = TrainingArguments(
-        "./checkpoint/baseline_Test_fine_3.073982620831417e-05/checkpoint-4664",
+        "./checkpoint/baseline_Test_fine_3.073982620831417e-05",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
         learning_rate=0.00003073982620831417,
