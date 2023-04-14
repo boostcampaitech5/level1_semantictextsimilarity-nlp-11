@@ -66,7 +66,10 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
 
 if __name__ == '__main__':
     seed_everything(42)
-    wandb.login(key='38e2b6604d2670c05fd7f22edb2a711faf495709')
+    f = open("/opt/ml/data/wandb_key.txt", 'r')
+    key_wandb = f.readline()
+    f.close()
+    wandb.login(key=key_wandb)
 
     sweep_config = {
         'method': 'random'
@@ -78,30 +81,30 @@ if __name__ == '__main__':
             'value': 8
         },
         'batch_size': {
-            'values': [4,8,16]
+            'values': [2,4,8,16]
         },
         'learning_rate': {
             'distribution': 'log_uniform_values',
-            'min': 1e-5,
+            'min': 8e-6,
             'max': 5e-5
         },
         'weight_decay': {
-            'values': [0.4,0.5]
+            'values': [ i/10 for i in range(2,6)]
         },
     }
     sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project="mdeberta-v3-base-kor-further_weight_decay")
+    sweep_id = wandb.sweep(sweep_config, project="nlp04/korean_sentiment_analysis_dataset3")
 
-    model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
+    model = AutoModelForSequenceClassification.from_pretrained("nlp04/korean_sentiment_analysis_dataset3",num_labels=1,ignore_mismatched_sizes=True)
 
     #model = transformers.AutoModelForSequenceClassification.from_pretrained(
     #   'C:/Users/tm011/PycharmProjects/NLP_COMP/checkpoint/checkpoint-6993')
-    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="nlp04/korean_sentiment_analysis_dataset3")
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="nlp04/korean_sentiment_analysis_dataset3")
 
 
     def model_init():
-        model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
+        model = AutoModelForSequenceClassification.from_pretrained("nlp04/korean_sentiment_analysis_dataset3",num_labels=1,ignore_mismatched_sizes=True)
         return model
 
 
