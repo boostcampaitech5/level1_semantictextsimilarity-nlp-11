@@ -131,7 +131,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         data = data.drop(columns=self.delete_columns)
         try:
             if self.state == "train":
-                targets = data[self.target_columns].apply(lambda x: min(5, round(max(0, x + 0.3),2)) if x >= 2.5 else min(5, round(max(0, x - 0.3),2))).values.tolist()
+                targets = data[self.target_columns].apply(lambda x: min(5, round(max(0, x + 0.1),2)) if x >= 2.5 else min(5, round(max(0, x - 0.1),2))).values.tolist()
             else:
                 targets = data[self.target_columns].values.tolist()
         except:
