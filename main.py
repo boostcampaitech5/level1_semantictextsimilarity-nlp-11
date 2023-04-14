@@ -131,9 +131,9 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         data = data.drop(columns=self.delete_columns)
         try:
             if self.state == "train":
-                targets = data[self.target_columns].apply(lambda x: x*2).values.tolist()
+                targets = data[self.target_columns].values.tolist()
             else:
-                targets = data[self.target_columns].apply(lambda x: x*2).values.tolist()
+                targets = data[self.target_columns].values.tolist()
         except:
             targets = []
         inputs = self.tokenizing(data)
@@ -144,17 +144,17 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
 if __name__ == '__main__':
 
     seed_everything(42)
-    model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
+    model = AutoModelForSequenceClassification.from_pretrained("./checkpoint/baseline_Test_fine_3.073982620831417e-05/checkpoint-4664",num_labels=1,ignore_mismatched_sizes=True)
     #model = AutoModelForSequenceClassification.from_pretrained("E:/nlp/checkpoint/best_acc/checkpoint-16317",num_labels=1,ignore_mismatched_sizes=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    Train_textDataset = Train_val_TextDataset('train','./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-finetuned-nsmc")
+    Train_textDataset = Train_val_TextDataset('train','./data/augment.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-finetuned-nsmc")
     Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-finetuned-nsmc")
 
 
     args = TrainingArguments(
-        "./checkpoint/baseline_Test_fine_3.073982620831417e-05",
+        "./checkpoint/best_model",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
         learning_rate=0.00003073982620831417,
