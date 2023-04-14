@@ -38,7 +38,7 @@ def seed_everything(seed):
 
 
 class Train_val_TextDataset(torch.utils.data.Dataset):
-    def __init__(self,state,data_file, text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
+    def __init__(self,state,data_file, text_columns, target_columns=None, delete_columns=None, max_length=128, model_name='klue/roberta-small'):
         self.state = state
         if self.state == 'train':
             self.data = pd.read_csv(data_file)
@@ -83,10 +83,12 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
     def tokenizing(self, dataframe):
         data = []
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
+            # text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
             text = '[SEP]'.join([self.preprocess_text(item[text_column]) for text_column in self.text_columns])
-
+            
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True,
                                      max_length=self.max_length)
+
             data.append(outputs['input_ids'])
         return data
 
@@ -96,23 +98,25 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
             targets = data[self.target_columns].values.tolist()
         except:
             targets = []
+
         inputs = self.tokenizing(data)
         return inputs, targets
 
     def preprocess_text(self,text):
         # normalize repeated characters using soynlp library
-        text = repeat_normalize(str(text), num_repeats=2)
+        text = str(text)
+        # text = repeat_normalize(str(text), num_repeats=2)
         # remove stopwords
         #text = ' '.join([token for token in text.split() if not token in stopwords])
         # remove special characters and numbers
         # text = re.sub('[^가-힣 ]', '', text)
         # text = re.sub('[^a-zA-Zㄱ-ㅎ가-힣]', '', text)
         # tokenize text using soynlp tokenizer
-        tokens = Regextokenizer.tokenize(text)
+        # tokens = Regextokenizer.tokenize(text)
         # lowercase all tokens
-        tokens = [token.lower() for token in tokens]
+        # tokens = [token.lower() for token in tokens]
         # join tokens back into sentence
-        text = ' '.join(tokens)
+        # text = ' '.join(tokens)
         # kospacing_sent = spacing(text)
         return text
 
@@ -123,11 +127,11 @@ if __name__ == '__main__':
     #model = AutoModelForSequenceClassification.from_pretrained("E:/nlp/checkpoint/best_acc/checkpoint-16317",num_labels=1,ignore_mismatched_sizes=True)
 
 
-    Train_textDataset = Train_val_TextDataset('train','./data/Augment01_train_data.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
-    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
+    Train_textDataset = Train_val_TextDataset('train','./data/train_arg_hanspell_shuffle.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=128,model_name="monologg/koelectra-base-v3-discriminator")
+    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=128,model_name="monologg/koelectra-base-v3-discriminator")
 
     args = TrainingArguments(
-        "E:/nlp/checkpoint/best_acc_/koelectra-labelsoomthing_0.3_0.1_0.4",
+        "E:/nlp/checkpoint/best_acc_/monologg/koelectra-base-v3-discriminator_train_arg_hanspell_shuffle",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
         learning_rate=0.00002860270719188072, #0.000005
