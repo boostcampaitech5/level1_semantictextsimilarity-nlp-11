@@ -1,5 +1,4 @@
 import os
-import random
 
 import pandas as pd
 from tqdm.auto import tqdm
@@ -13,7 +12,16 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 import numpy as np
 from scipy.stats import pearsonr
-import wandb
+import random
+from datetime import datetime
+
+#import nltk
+# from nltk.corpus import stopwords
+def compute_pearson_correlation(pred):
+    preds = pred.predictions.flatten()
+    labels = pred.label_ids.flatten()
+    return {"pearson_correlation": pearsonr(preds, labels)[0]}
+
 
 def seed_everything(seed):
     random.seed(seed)
@@ -23,14 +31,17 @@ def seed_everything(seed):
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = True
-def compute_pearson_correlation(pred):
-    preds = pred.predictions.flatten()
-    labels = pred.label_ids.flatten()
-    return {"pearson_correlation": pearsonr(preds, labels)[0]}
+
+
 
 class Train_val_TextDataset(torch.utils.data.Dataset):
-    def __init__(self, data_file, text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
-        self.data = pd.read_csv(data_file)
+    def __init__(self,state,data_file, text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
+        if state == 'train':
+            self.data = pd.read_csv(data_file)
+            #self.add_data = pd.read_csv('./data/preprocessed_data_sin_v2_filter.csv')
+            #self.data = pd.concat([self.data,self.add_data])
+        else:
+            self.data = pd.read_csv(data_file)
         self.text_columns = text_columns
         self.target_columns = target_columns if target_columns is not None else []
         self.delete_columns = delete_columns if delete_columns is not None else []
@@ -47,11 +58,19 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.inputs)
 
+    def remove_stopwords(self, text):
+        words = text.split()
+        words = [word for word in words if word not in stopwords]
+        return ' '.join(words)
+
     def tokenizing(self, dataframe):
-        data=[]
+        data = []
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
+
             text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
-            outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True, max_length=self.max_length)
+            ##불용어 제거
+            outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True,
+                                     max_length=self.max_length)
             data.append(outputs['input_ids'])
         return data
 
@@ -64,75 +83,50 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         inputs = self.tokenizing(data)
         return inputs, targets
 
+
+
 if __name__ == '__main__':
+
     seed_everything(42)
-    wandb.login(key='38e2b6604d2670c05fd7f22edb2a711faf495709')
+    #model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
+    
+    model_name = "monologg/koelectra-base-v3-discriminator"
+    train_data_name = './data/train.csv'
 
-    sweep_config = {
-        'method': 'random'
-    }
+    model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
+    # model = AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/TEST-6/checkpoint-4081', num_labels=1, ignore_mismatched_sizes=True)
 
-    # hyperparameters
-    parameters_dict = {
-        'epochs': {
-            'value': 8
-        },
-        'batch_size': {
-            'values': [4,8,16]
-        },
-        'learning_rate': {
-            'distribution': 'log_uniform_values',
-            'min': 1e-5,
-            'max': 5e-5
-        },
-        'weight_decay': {
-            'values': [0.4,0.5]
-        },
-    }
-    sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project="mdeberta-v3-base-kor-further_weight_decay")
-
-    model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
-
-    #model = transformers.AutoModelForSequenceClassification.from_pretrained(
-    #   'C:/Users/tm011/PycharmProjects/NLP_COMP/checkpoint/checkpoint-6993')
-    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    max_length = 256  # 원래 512
 
 
-    def model_init():
-        model = AutoModelForSequenceClassification.from_pretrained("lighthouse/mdeberta-v3-base-kor-further",num_labels=1,ignore_mismatched_sizes=True)
-        return model
 
+    Train_textDataset = Train_val_TextDataset('train', train_data_name ,['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
+    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
 
-    def train(config=None):
-        with wandb.init(config=config):
-            config = wandb.config
-            t = config.learning_rate
-            args = TrainingArguments(
-                f"E:/nlp/checkpoint/baseline_Test_fine_{t}",
-                evaluation_strategy="epoch",
-                save_strategy="epoch",
-                report_to='wandb',
-                learning_rate=config.learning_rate,
-                per_device_train_batch_size=config.batch_size,
-                per_device_eval_batch_size=config.batch_size,
-                num_train_epochs=config.epochs,
-                weight_decay=config.weight_decay,
-                load_best_model_at_end=True,
-                dataloader_num_workers=4,
-                logging_steps=200,
-            )
-            trainer = Trainer(
-                model_init = model_init,
-                args=args,
-                train_dataset=Train_textDataset,
-                eval_dataset=Val_textDataset,
-                # tokenizer=tokenizer,
-                compute_metrics=compute_pearson_correlation
-            )
+    args = TrainingArguments(
+        f'checkpoint/{model_name}/{train_data_name}/{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}',
+        evaluation_strategy = "epoch",
+        save_strategy = "epoch",
+        learning_rate=2.860270719188072e-05, #0.000005
+        # group_by_length=True,
+        # auto_find_batch_size=True,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
+        num_train_epochs=7,
+        weight_decay=0.5,
+        load_best_model_at_end=True,
+        dataloader_num_workers = 4,
+        logging_steps=200,
+        seed = 42
+    )
 
-            trainer.train()
+    trainer = Trainer(
+        model,
+        args,
+        train_dataset=Train_textDataset,
+        eval_dataset=Val_textDataset,
+        #tokenizer=tokenizer,
+        compute_metrics=compute_pearson_correlation
+    )
 
-
-    wandb.agent(sweep_id, train, count=15)
+    trainer.train()
