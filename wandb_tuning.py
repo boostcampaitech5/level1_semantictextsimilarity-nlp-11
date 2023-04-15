@@ -77,19 +77,19 @@ if __name__ == '__main__':
     # hyperparameters
     parameters_dict = {
         'epochs': {
-            'values': [7, 8, 9, 10, 11, 12]
+            'values': [8, 10, 12]
         },
         'batch_size': {
-            'values': [8, 16, 32, 64]
+            'values': [8, 16, 32]
         },
         'learning_rate': {
             'distribution': 'log_uniform_values',
-            'min': 2e-5, # 0.00002
-            'max': 3e-5  # 0.00003
+            'min': 2.6e-5, # 0.00002
+            'max': 3.3e-5  # 0.00003
                          # 0.00002860270719188072
         },
         'weight_decay': {
-            'values': [0.1, 0.2, 0.3, 0.4, 0.5]
+            'values': [0.4, 0.5, 0.6]
         },
     }
     sweep_config['parameters'] = parameters_dict
