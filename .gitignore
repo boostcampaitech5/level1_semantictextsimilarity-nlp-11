@@ -1,3 +1,5 @@
 model.pt
 data/*
 output.csv
+wandb/*
+param_sweep/*

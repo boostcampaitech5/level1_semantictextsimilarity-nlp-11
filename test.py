@@ -1,6 +1,8 @@
 import os
 
 import pandas as pd
+from soynlp.normalizer import repeat_normalize
+from soynlp.tokenizer import RegexTokenizer
 from tqdm.auto import tqdm
 import transformers
 import torch
@@ -13,10 +15,8 @@ from transformers import AutoTokenizer
 import numpy as np
 from scipy.stats import pearsonr
 import random
-from datetime import datetime
-
-#import nltk
-# from nltk.corpus import stopwords
+import nltk
+from nltk.corpus import stopwords
 def compute_pearson_correlation(pred):
     preds = pred.predictions.flatten()
     labels = pred.label_ids.flatten()
@@ -36,7 +36,8 @@ def seed_everything(seed):
 
 class Train_val_TextDataset(torch.utils.data.Dataset):
     def __init__(self,state,data_file, text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
-        if state == 'train':
+        self.state = state
+        if self.state == 'train':
             self.data = pd.read_csv(data_file)
             #self.add_data = pd.read_csv('./data/preprocessed_data_sin_v2_filter.csv')
             #self.data = pd.concat([self.data,self.add_data])
@@ -48,7 +49,8 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         self.max_length = max_length
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.inputs, self.targets = self.preprocessing(self.data)
-
+        self.stopwords = pd.read_csv('./data/stopwords.csv', encoding='cp949')
+        self.Regextokenizer = RegexTokenizer()
     def __getitem__(self, idx):
         if len(self.targets) == 0:
             return torch.tensor(self.inputs[idx])
@@ -63,12 +65,20 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         words = [word for word in words if word not in stopwords]
         return ' '.join(words)
 
-    def tokenizing(self, dataframe):
+    def tokenizing(self, dataframe, mask_prob=0.1):
+        if self.state == 'val':
+            mask_prob = -999
         data = []
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
-
             text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
-            ##불용어 제거
+            segments = text.split('[SEP]')
+            for seg_idx, segment in enumerate(segments):
+                words = segment.split()
+                for i, word in enumerate(words):
+                    if '[SEP]' not in word and random.random() < mask_prob:
+                        words[i] = '[MASK]'
+                segments[seg_idx] = ' '.join(words)
+            text = '[SEP]'.join(segments)
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True,
                                      max_length=self.max_length)
             data.append(outputs['input_ids'])
@@ -83,47 +93,59 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         inputs = self.tokenizing(data)
         return inputs, targets
 
-
+    def preprocess_text(self,text):
+        # normalize repeated characters using soynlp library
+        text = repeat_normalize(text, num_repeats=2)
+        # remove stopwords
+        text = ' '.join([token for token in text.split() if not token in stopwords])
+        # remove special characters and numbers
+        # text = re.sub('[^가-힣 ]', '', text)
+        # text = re.sub('[^a-zA-Zㄱ-ㅎ가-힣]', '', text)
+        # tokenize text using soynlp tokenizer
+        tokens = self.Regextokenizer.tokenize(text)
+        # lowercase all tokens
+        tokens = [token.lower() for token in tokens]
+        # join tokens back into sentence
+        text = ' '.join(tokens)
+        # kospacing_sent = spacing(text)
+        return text
 
 if __name__ == '__main__':
 
-    seed_everything(42)
-    
-    model_name = "monologg/koelectra-base-v3-discriminator"
-    model_path = "/opt/ml/checkpoint-6996"
-    train_data_name = './data/train.csv'
-
-    model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
-
-    max_length = 256  # 원래 512
+    seed_everything(43)
+    model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-v3-discriminator",num_labels=1,ignore_mismatched_sizes=True)
+    #model = AutoModelForSequenceClassification.from_pretrained("E:/nlp/checkpoint/best_acc/checkpoint-16317",num_labels=1,ignore_mismatched_sizes=True)
 
 
 
-    Train_textDataset = Train_val_TextDataset('train', train_data_name ,['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
-    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
+
+    Train_textDataset = Train_val_TextDataset('train','./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
+    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
+
+
+
+
 
     args = TrainingArguments(
-        f'checkpoint/{model_name}/{train_data_name}/{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}',
+        "E:/nlp/checkpoint/best_acc_/dis_10ep_random_masking",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
-        learning_rate=0.000002631382974714461, #0.000005
-        # group_by_length=True,
-        # auto_find_batch_size=True,
+        learning_rate=0.00002860270719188072, #0.000005
         per_device_train_batch_size=16,
         per_device_eval_batch_size=16,
-        num_train_epochs=2,
+        num_train_epochs=10,
         weight_decay=0.5,
         load_best_model_at_end=True,
         dataloader_num_workers = 4,
         logging_steps=200,
-        seed = 42
+        seed = 43
     )
 
     trainer = Trainer(
         model,
         args,
-        train_dataset=Val_textDataset,
-        eval_dataset=Train_textDataset,
+        train_dataset=Train_textDataset,
+        eval_dataset=Val_textDataset,
         #tokenizer=tokenizer,
         compute_metrics=compute_pearson_correlation
     )
