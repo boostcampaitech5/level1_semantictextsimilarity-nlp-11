@@ -46,7 +46,7 @@ class Infer_TextDataset(torch.utils.data.Dataset):
     def tokenizing(self, dataframe):
         data=[]
         for idx, item in tqdm(dataframe.iterrows(), desc='Tokenizing', total=len(dataframe)):
-            text = '[SEP]'.join([preprocess_text(item[text_column]) for text_column in self.text_columns])
+            text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
             print(text)
             outputs = self.tokenizer(text, add_special_tokens=True, padding='max_length', truncation=True, max_length=self.max_length)
             data.append(outputs['input_ids'])
@@ -59,9 +59,9 @@ class Infer_TextDataset(torch.utils.data.Dataset):
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/add_dev/discriminator_include_en_10epoch/checkpoint-70')
+    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/elector/train_dev/checkpoint-70')
     model.to(device)
-    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],None,None,max_length=512,model_name="monologg/koelectra-base-v3-discriminator")
+    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],None,None,max_length=256,model_name="kykim/electra-kor-base")
     test_dataloader = DataLoader(dataset=test_textDataset,
                                  batch_size=4,
                                  num_workers=0,
@@ -79,4 +79,4 @@ if __name__ == '__main__':
     #predictions = list(round(float(i), 1) for i in torch.cat(output))
     output = pd.read_csv('./data/sample_submission.csv')
     output['target'] = score
-    output.to_csv('dev_add_dis_preproceess_include_en.csv', index=False)
+    output.to_csv('2023-04-16_model_elctor_train_dev.csv', index=False)
