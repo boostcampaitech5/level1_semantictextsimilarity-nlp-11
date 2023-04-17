@@ -1,6 +1,7 @@
 model.pt
 data/*
 output.csv
+nohup.out
 augmentation/*
 preprocessing/*
 wandb/*
