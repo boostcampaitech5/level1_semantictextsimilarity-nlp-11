@@ -101,31 +101,29 @@ if __name__ == '__main__':
             'value': 8
         },
         'batch_size': {
-            'values': [4,8,16]
+            'values': [2,4,8]
         },
         'learning_rate': {
-            'distribution': 'log_uniform_values',
-            'min': 8e-6,
-            'max': 4e-5
+            'values': [1e-5, 2e-5]
         },
         'weight_decay': {
-            'values': [0.2,0.3,0.4,0.5]
+            'values': [0.3,0.4]
         },
     }
 
     # 하이퍼 파라미터 sweep config
     sweep_config = {
-        'method': 'random'
-        'parameters' = parameters_dict
+        'method': 'grid',
+        'parameters': parameters_dict
     }
 
     # wandb를 사용하여 sweep를 생성하고, sweep_id를 반환받는다.
-    sweep_id = wandb.sweep(sweep_config, project="monologg_koelectra-base-finetuned-nsmc_04_13")
+    sweep_id = wandb.sweep(sweep_config, project="monologg_koelectra-base-finetuned-nsmc_04_15")
 
     # model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
     
-    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-finetuned-nsmc")
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="monologg/koelectra-base-finetuned-nsmc")
+    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="monologg/koelectra-base-finetuned-nsmc")
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="monologg/koelectra-base-finetuned-nsmc")
 
 
     def model_init():
@@ -166,4 +164,4 @@ if __name__ == '__main__':
             trainer.train()
 
 
-    wandb.agent(sweep_id, train, count=15)
+    wandb.agent(sweep_id, train, count=10)
