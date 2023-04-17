@@ -1,3 +1,6 @@
+import os
+import random
+
 import pandas as pd
 from tqdm.auto import tqdm
 import transformers
@@ -10,11 +13,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 import numpy as np
 from scipy.stats import pearsonr
-import random
-import os
-from datetime import datetime
 import wandb
-
 
 def seed_everything(seed):
     random.seed(seed)
@@ -24,15 +23,20 @@ def seed_everything(seed):
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = True
-
 def compute_pearson_correlation(pred):
     preds = pred.predictions.flatten()
     labels = pred.label_ids.flatten()
     return {"pearson_correlation": pearsonr(preds, labels)[0]}
 
 class Train_val_TextDataset(torch.utils.data.Dataset):
-    def __init__(self, data_file, text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
-        self.data = pd.read_csv(data_file)
+    def __init__(self,data_file, state,text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
+        self.state = state
+        if self.state == 'train':
+            self.data = pd.read_csv(data_file)
+            self.add_data = pd.read_csv('./data/train_arg_hanspell_shuffle_RE.csv')
+            self.data = pd.concat([self.data,self.add_data])
+        else:
+            self.data = pd.read_csv(data_file)
         self.text_columns = text_columns
         self.target_columns = target_columns if target_columns is not None else []
         self.delete_columns = delete_columns if delete_columns is not None else []
@@ -44,7 +48,20 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         if len(self.targets) == 0:
             return torch.tensor(self.inputs[idx])
         else:
-            return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(self.targets[idx])}
+            if self.state == 'train':
+                target_val = self.targets[idx]
+                random1 = random.random()
+                if random1 <= 0.5:
+                    add_score = random.uniform(0.0, 0.15)
+                    if random.random() >= 0.5:
+                        target_val += add_score
+                    else:
+                        target_val -= add_score
+
+                target_val = max(min(target_val, 5.0), 0.0)
+                return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(target_val)}
+            else:
+                return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(self.targets[idx])}
 
     def __len__(self):
         return len(self.inputs)
@@ -68,7 +85,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
 
 if __name__ == '__main__':
     seed_everything(42)
-    wandb.login(key='37d25d8bc75df6ee575ed47618c92c60d5006c17')
+    wandb.login(key='38e2b6604d2670c05fd7f22edb2a711faf495709')
 
     sweep_config = {
         'method': 'random'
@@ -77,38 +94,33 @@ if __name__ == '__main__':
     # hyperparameters
     parameters_dict = {
         'epochs': {
-            'values': [7, 8, 9, 10, 11, 12]
+            'value': 10
         },
         'batch_size': {
-            'values': [8, 16, 32, 64]
+            'values': [4,8,16]
         },
         'learning_rate': {
             'distribution': 'log_uniform_values',
-            'min': 2e-5, # 0.00002
-            'max': 3e-5  # 0.00003
-                         # 0.00002860270719188072
+            'min': 6e-6,
+            'max': 3e-5
         },
         'weight_decay': {
-            'values': [0.1, 0.2, 0.3, 0.4, 0.5]
+            'values': [0.5]
         },
     }
     sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project="discriminator_param_sweep")
-
-    model_name = "monologg/koelectra-base-v3-discriminator"
-    train_data_name = 'train.csv'
-    max_length = 256  # 512
-    
-    model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
+    sweep_id = wandb.sweep(sweep_config, project='electra-kor-base')
+    seed_everything(43)
+    model = AutoModelForSequenceClassification.from_pretrained('kykim/electra-kor-base',num_labels=1,ignore_mismatched_sizes=True)
 
     #model = transformers.AutoModelForSequenceClassification.from_pretrained(
     #   'C:/Users/tm011/PycharmProjects/NLP_COMP/checkpoint/checkpoint-6993')
-    Train_textDataset = Train_val_TextDataset(f'./data/{train_data_name}',['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
+    Train_textDataset = Train_val_TextDataset('./data/train.csv','train',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name='kykim/electra-kor-base')
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv','val',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name='kykim/electra-kor-base')
 
 
     def model_init():
-        model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
+        model = AutoModelForSequenceClassification.from_pretrained('kykim/electra-kor-base',num_labels=1,ignore_mismatched_sizes=True)
         return model
 
 
@@ -117,7 +129,7 @@ if __name__ == '__main__':
             config = wandb.config
             t = config.learning_rate
             args = TrainingArguments(
-                f'param_sweep/checkpoint/{model_name}/{train_data_name}/{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}',
+                f"E:/nlp/funnel/PLZ{t}",
                 evaluation_strategy="epoch",
                 save_strategy="epoch",
                 report_to='wandb',
@@ -129,7 +141,8 @@ if __name__ == '__main__':
                 load_best_model_at_end=True,
                 dataloader_num_workers=4,
                 logging_steps=200,
-                seed=42
+                group_by_length = True,
+                seed = 43
             )
             trainer = Trainer(
                 model_init = model_init,
@@ -138,9 +151,10 @@ if __name__ == '__main__':
                 eval_dataset=Val_textDataset,
                 # tokenizer=tokenizer,
                 compute_metrics=compute_pearson_correlation
+
             )
 
             trainer.train()
 
 
-    wandb.agent(sweep_id, train, count=15)
+    wandb.agent(sweep_id, train, count=20)
