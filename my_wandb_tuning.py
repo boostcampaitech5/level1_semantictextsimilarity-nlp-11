@@ -71,21 +71,25 @@ if __name__ == '__main__':
     wandb.login(key='37d25d8bc75df6ee575ed47618c92c60d5006c17')
 
     sweep_config = {
-        'method': 'random'
+        'method': 'bayes',
+        'metric': {
+            'goal': 'maximize', 
+            'name': 'val_pearson'
+        },
     }
 
     # hyperparameters
     parameters_dict = {
         'epochs': {
-            'values': [6, 7, 8]  # 6, 7
+            'values': [7, 8, 9]  # 6, 7
         },
         'batch_size': {
-            'values': [16, 32]  # 16
+            'values': [32, 64, 128]  # 16
         },
         'learning_rate': {
             'distribution': 'log_uniform_values',
-            'min': 2.5e-5, # 0.00002
-            'max': 5.5e-5  # 0.00003
+            'min': 3.5e-5, # 0.00002
+            'max': 4.0e-5  # 0.00003
                            # 4~4.5
         },
         'warmup_steps': {
@@ -96,7 +100,7 @@ if __name__ == '__main__':
         },
     }
     sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project="KR-ELECTRA-discriminator")
+    sweep_id = wandb.sweep(sweep_config, project="KR-ELECTRA-discriminator_new")
 
     model_name = "snunlp/KR-ELECTRA-discriminator"
     # model_name = "monologg/koelectra-base-v3-discriminator"

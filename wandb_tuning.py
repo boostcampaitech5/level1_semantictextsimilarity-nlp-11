@@ -37,14 +37,6 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
             self.data = pd.concat([self.data,self.add_data])
         else:
             self.data = pd.read_csv(data_file)
-    def __init__(self,data_file, state,text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
-        self.state = state
-        if self.state == 'train':
-            self.data = pd.read_csv(data_file)
-            self.add_data = pd.read_csv('./data/train_arg_hanspell_shuffle_RE.csv')
-            self.data = pd.concat([self.data,self.add_data])
-        else:
-            self.data = pd.read_csv(data_file)
         self.text_columns = text_columns
         self.target_columns = target_columns if target_columns is not None else []
         self.delete_columns = delete_columns if delete_columns is not None else []
@@ -55,21 +47,6 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         if len(self.targets) == 0:
             return torch.tensor(self.inputs[idx])
-        else:
-            if self.state == 'train':
-                target_val = self.targets[idx]
-                random1 = random.random()
-                if random1 <= 0.5:
-                    add_score = random.uniform(0.0, 0.15)
-                    if random.random() >= 0.5:
-                        target_val += add_score
-                    else:
-                        target_val -= add_score
-
-                target_val = max(min(target_val, 5.0), 0.0)
-                return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(target_val)}
-            else:
-                return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(self.targets[idx])}
         else:
             if self.state == 'train':
                 target_val = self.targets[idx]
@@ -118,7 +95,6 @@ if __name__ == '__main__':
     parameters_dict = {
         'epochs': {
             'value': 10
-            'value': 10
         },
         'batch_size': {
             'values': [4,8,16]
@@ -127,11 +103,8 @@ if __name__ == '__main__':
             'distribution': 'log_uniform_values',
             'min': 6e-6,
             'max': 3e-5
-            'min': 6e-6,
-            'max': 3e-5
         },
         'weight_decay': {
-            'values': [0.5]
             'values': [0.5]
         },
     }
@@ -140,20 +113,13 @@ if __name__ == '__main__':
     seed_everything(43)
     model = AutoModelForSequenceClassification.from_pretrained('kykim/electra-kor-base',num_labels=1,ignore_mismatched_sizes=True)
 
-    sweep_id = wandb.sweep(sweep_config, project='electra-kor-base')
-    seed_everything(43)
-    model = AutoModelForSequenceClassification.from_pretrained('kykim/electra-kor-base',num_labels=1,ignore_mismatched_sizes=True)
-
     #model = transformers.AutoModelForSequenceClassification.from_pretrained(
     #   'C:/Users/tm011/PycharmProjects/NLP_COMP/checkpoint/checkpoint-6993')
-    Train_textDataset = Train_val_TextDataset('./data/train.csv','train',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name='kykim/electra-kor-base')
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv','val',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name='kykim/electra-kor-base')
     Train_textDataset = Train_val_TextDataset('./data/train.csv','train',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name='kykim/electra-kor-base')
     Val_textDataset = Train_val_TextDataset('./data/dev.csv','val',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name='kykim/electra-kor-base')
 
 
     def model_init():
-        model = AutoModelForSequenceClassification.from_pretrained('kykim/electra-kor-base',num_labels=1,ignore_mismatched_sizes=True)
         model = AutoModelForSequenceClassification.from_pretrained('kykim/electra-kor-base',num_labels=1,ignore_mismatched_sizes=True)
         return model
 
@@ -163,7 +129,6 @@ if __name__ == '__main__':
             config = wandb.config
             t = config.learning_rate
             args = TrainingArguments(
-                f"E:/nlp/funnel/PLZ{t}",
                 f"E:/nlp/funnel/PLZ{t}",
                 evaluation_strategy="epoch",
                 save_strategy="epoch",
@@ -178,8 +143,6 @@ if __name__ == '__main__':
                 logging_steps=200,
                 group_by_length = True,
                 seed = 43
-                group_by_length = True,
-                seed = 43
             )
             trainer = Trainer(
                 model_init = model_init,
@@ -189,11 +152,9 @@ if __name__ == '__main__':
                 # tokenizer=tokenizer,
                 compute_metrics=compute_pearson_correlation
 
-
             )
 
             trainer.train()
 
 
-    wandb.agent(sweep_id, train, count=20)
     wandb.agent(sweep_id, train, count=20)
