@@ -101,20 +101,26 @@ if __name__ == '__main__':
             'value': 8
         },
         'batch_size': {
-            'values': [2,4,8]
+            'values': [4,8,16]
         },
         'learning_rate': {
-            'values': [1e-5, 2e-5]
+            'distribution': 'log_uniform_values',
+            'min': 1e-5,
+            'max': 5e-5
         },
         'weight_decay': {
-            'values': [0.3,0.4]
+            'values': [0.3,0.4,0.5]
         },
     }
 
     # 하이퍼 파라미터 sweep config
     sweep_config = {
-        'method': 'grid',
-        'parameters': parameters_dict
+        'method': 'bayes',
+        'parameters': parameters_dict,
+        'metric':{
+            'name': 'val_pearson',
+            'goal': 'maximize'
+        }
     }
 
     # wandb를 사용하여 sweep를 생성하고, sweep_id를 반환받는다.
