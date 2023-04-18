@@ -35,9 +35,9 @@ class Infer_TextDataset(torch.utils.data.Dataset):
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/best_acc_add_data/checkpoint-23625')
+    model = transformers.AutoModelForSequenceClassification.from_pretrained('./checkpoint/best_model_KR-ELECTRA-discriminator/checkpoint-276')
     model.to(device)
-    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="lighthouse/mdeberta-v3-base-kor-further")
+    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name="snunlp/KR-ELECTRA-discriminator")
     test_dataloader = DataLoader(dataset=test_textDataset,
                                  batch_size=4,
                                  num_workers=0,

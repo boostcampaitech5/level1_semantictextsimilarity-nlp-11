@@ -94,27 +94,27 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         text1, text2 = text_list
         return self.preprocess_text(text1), self.preprocess_text(text2)
 
-    def preprocess_text(self, text):
-        # create Korean tokenizer using soynlp library
-        # tokenizer = RegexTokenizer()
+    # def preprocess_text(self, text):
+    #     # create Korean tokenizer using soynlp library
+    #     # tokenizer = RegexTokenizer()
 
-        # 2회 이상 반복된 문자를 정규화
-        text = repeat_normalize(text, num_repeats=2)
-        # 불용어 제거
-        # text = ' '.join([token for token in text.split() if not token in stopwords])
-        # 대문자를 소문자로 변경
-        text = text.lower()
-        # "<PERSON>"을 "사람"으로 변경
-        text = re.sub('<PERSON>', '사람', text)
-        # 한글 문자, 영어 문자, 공백 문자를 제외한 모든 문자 제거
-        text = re.sub('[^가-힣a-z\\s]', '', text)
-        # 텍스트를 토큰으로 분리  예) "안녕하세요" -> "안녕", "하", "세요"
-        # tokens = tokenizer.tokenize(text)
-        # 어간 추출
-        # tokens = [self.stemmer.morphs(token)[0] for token in text.split()]
-        # join tokens back into sentence
-        # text = ' '.join(tokens)
-        return text
+    #     # 2회 이상 반복된 문자를 정규화
+    #     text = repeat_normalize(text, num_repeats=2)
+    #     # 불용어 제거
+    #     # text = ' '.join([token for token in text.split() if not token in stopwords])
+    #     # 대문자를 소문자로 변경
+    #     text = text.lower()
+    #     # "<PERSON>"을 "사람"으로 변경
+    #     text = re.sub('<PERSON>', '사람', text)
+    #     # 한글 문자, 영어 문자, 공백 문자를 제외한 모든 문자 제거
+    #     text = re.sub('[^가-힣a-z\\s]', '', text)
+    #     # 텍스트를 토큰으로 분리  예) "안녕하세요" -> "안녕", "하", "세요"
+    #     # tokens = tokenizer.tokenize(text)
+    #     # 어간 추출
+    #     # tokens = [self.stemmer.morphs(token)[0] for token in text.split()]
+    #     # join tokens back into sentence
+    #     # text = ' '.join(tokens)
+    #     return text
 
     def tokenizing(self, dataframe):
         data = []
@@ -144,24 +144,24 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
 if __name__ == '__main__':
 
     seed_everything(42)
-    model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
+    model = AutoModelForSequenceClassification.from_pretrained("snunlp/KR-ELECTRA-discriminator",num_labels=1,ignore_mismatched_sizes=True)
     #model = AutoModelForSequenceClassification.from_pretrained("E:/nlp/checkpoint/best_acc/checkpoint-16317",num_labels=1,ignore_mismatched_sizes=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    Train_textDataset = Train_val_TextDataset('train','./data/augment.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="monologg/koelectra-base-finetuned-nsmc")
-    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="monologg/koelectra-base-finetuned-nsmc")
+    Train_textDataset = Train_val_TextDataset('train','./data/best_data_v1.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name="snunlp/KR-ELECTRA-discriminator")
+    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name="snunlp/KR-ELECTRA-discriminator")
 
 
     args = TrainingArguments(
-        "./checkpoint/best_model",
+        "./checkpoint/best_model_KR-ELECTRA-discriminator",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
-        learning_rate=0.00003073982620831417,
-        per_device_train_batch_size=16,
-        per_device_eval_batch_size=16,
+        learning_rate=0.000018234535374473915,
+        per_device_train_batch_size=4,
+        per_device_eval_batch_size=4,
         num_train_epochs=8,
-        weight_decay=0.2,
+        weight_decay=0.5,
         load_best_model_at_end=True,
         dataloader_num_workers = 4,
         logging_steps=200,

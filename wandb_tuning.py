@@ -101,36 +101,42 @@ if __name__ == '__main__':
             'value': 8
         },
         'batch_size': {
-            'values': [2,4,8]
+            'values': [4,8,16]
         },
         'learning_rate': {
-            'values': [1e-5, 2e-5]
+            'distribution': 'log_uniform_values',
+            'min': 1e-5,
+            'max': 5e-5
         },
         'weight_decay': {
-            'values': [0.3,0.4]
+            'values': [0.3,0.4,0.5]
         },
     }
 
     # 하이퍼 파라미터 sweep config
     sweep_config = {
-        'method': 'grid',
-        'parameters': parameters_dict
+        'method': 'bayes',
+        'parameters': parameters_dict,
+        'metric':{
+            'name': 'val_pearson',
+            'goal': 'maximize'
+        }
     }
 
     # wandb를 사용하여 sweep를 생성하고, sweep_id를 반환받는다.
-    sweep_id = wandb.sweep(sweep_config, project="monologg_koelectra-base-finetuned-nsmc_04_15")
+    sweep_id = wandb.sweep(sweep_config, project="snunlp_KR-ELECTRA-discriminator_new_dataset")
 
     # model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
     
-    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="monologg/koelectra-base-finetuned-nsmc")
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="monologg/koelectra-base-finetuned-nsmc")
+    Train_textDataset = Train_val_TextDataset('./data/best_data_v1.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="snunlp/KR-ELECTRA-discriminator")
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="snunlp/KR-ELECTRA-discriminator")
 
 
     def model_init():
         """
         선학습된 모델 로드 후 분류를 위한 마지막 레이어 추가(num_labels=1)
         """
-        model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
+        model = AutoModelForSequenceClassification.from_pretrained("snunlp/KR-ELECTRA-discriminator",num_labels=1,ignore_mismatched_sizes=True)
         return model
 
 
@@ -139,7 +145,7 @@ if __name__ == '__main__':
             config = wandb.config
             t = config.learning_rate
             args = TrainingArguments(
-                f"./checkpoint/baseline_Test_fine_{t}",
+                output_dir=f"./checkpoint/baseline_Test_fine_{t}",
                 evaluation_strategy="epoch",
                 save_strategy="epoch",
                 report_to='wandb',
