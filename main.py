@@ -143,23 +143,25 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
 
 if __name__ == '__main__':
 
+    model_name = "snunlp/KR-ELECTRA-discriminator"
+
     seed_everything(42)
-    model = AutoModelForSequenceClassification.from_pretrained("snunlp/KR-ELECTRA-discriminator",num_labels=1,ignore_mismatched_sizes=True)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
     #model = AutoModelForSequenceClassification.from_pretrained("E:/nlp/checkpoint/best_acc/checkpoint-16317",num_labels=1,ignore_mismatched_sizes=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    Train_textDataset = Train_val_TextDataset('train','./data/best_data_v1.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name="snunlp/KR-ELECTRA-discriminator")
-    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name="snunlp/KR-ELECTRA-discriminator")
+    Train_textDataset = Train_val_TextDataset('train','./data/best_data_v1.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name=model_name)
+    Val_textDataset = Train_val_TextDataset('val','./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=256,model_name=model_name)
 
 
     args = TrainingArguments(
         "./checkpoint/best_model_KR-ELECTRA-discriminator",
         evaluation_strategy = "epoch",
         save_strategy = "epoch",
-        learning_rate=0.000018234535374473915,
-        per_device_train_batch_size=4,
-        per_device_eval_batch_size=4,
+        learning_rate=0.000014328226529744968,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
         num_train_epochs=8,
         weight_decay=0.5,
         load_best_model_at_end=True,

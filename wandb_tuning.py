@@ -92,24 +92,42 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
         return inputs, targets
 
 if __name__ == '__main__':
+
+    model_name = "snunlp/KR-ELECTRA-discriminator"
+
     seed_everything(42)
     wandb.login(key='c0d96b72557660bd63642b07a905e93575f72573')
 
     # 튜닝할 하이퍼 파라미터의 범위를 지정
+    # parameters_dict = {
+    #     'epochs': {
+    #         'value': 8
+    #     },
+    #     'batch_size': {
+    #         'values': [4,8,16]
+    #     },
+    #     'learning_rate': {
+    #         'distribution': 'log_uniform_values',
+    #         'min': 1e-5,
+    #         'max': 5e-5
+    #     },
+    #     'weight_decay': {
+    #         'values': [0.3,0.4,0.5]
+    #     },
+    # }
+
     parameters_dict = {
         'epochs': {
-            'value': 8
+            'value': [8]  
         },
         'batch_size': {
-            'values': [4,8,16]
+            'value': [4]  
         },
         'learning_rate': {
-            'distribution': 'log_uniform_values',
-            'min': 1e-5,
-            'max': 5e-5
+            'value': [0.000018234535374473915]
         },
         'weight_decay': {
-            'values': [0.3,0.4,0.5]
+            'value': [0.5]
         },
     }
 
@@ -124,19 +142,19 @@ if __name__ == '__main__':
     }
 
     # wandb를 사용하여 sweep를 생성하고, sweep_id를 반환받는다.
-    sweep_id = wandb.sweep(sweep_config, project="snunlp_KR-ELECTRA-discriminator_new_dataset")
+    sweep_id = wandb.sweep(sweep_config, project=f"{model_name.replace('/', '_')}_new_dataset")
 
     # model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-finetuned-nsmc",num_labels=1,ignore_mismatched_sizes=True)
     
-    Train_textDataset = Train_val_TextDataset('./data/best_data_v1.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="snunlp/KR-ELECTRA-discriminator")
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name="snunlp/KR-ELECTRA-discriminator")
+    Train_textDataset = Train_val_TextDataset('./data/best_data_v1.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name=model_name)
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=200,model_name=model_name)
 
 
     def model_init():
         """
         선학습된 모델 로드 후 분류를 위한 마지막 레이어 추가(num_labels=1)
         """
-        model = AutoModelForSequenceClassification.from_pretrained("snunlp/KR-ELECTRA-discriminator",num_labels=1,ignore_mismatched_sizes=True)
+        model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
         return model
 
 
