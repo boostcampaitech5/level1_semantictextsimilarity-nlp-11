@@ -1,6 +1,3 @@
-import os
-import random
-
 import pandas as pd
 from tqdm.auto import tqdm
 import transformers
@@ -10,10 +7,14 @@ from transformers import ElectraModel, ElectraTokenizer
 import torch
 import pandas as pd
 from tqdm import tqdm
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForMaskedLM
 import numpy as np
 from scipy.stats import pearsonr
+import random
+import os
+from datetime import datetime
 import wandb
+
 
 def seed_everything(seed):
     random.seed(seed)
@@ -23,6 +24,7 @@ def seed_everything(seed):
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = True
+
 def compute_pearson_correlation(pred):
     preds = pred.predictions.flatten()
     labels = pred.label_ids.flatten()
@@ -41,6 +43,7 @@ class Train_val_TextDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         if len(self.targets) == 0:
             return torch.tensor(self.inputs[idx])
+        
         else:
             return {"input_ids": torch.tensor(self.inputs[idx]), "labels": torch.tensor(self.targets[idx])}
 
@@ -72,39 +75,61 @@ if __name__ == '__main__':
     wandb.login(key=key_wandb)
 
     sweep_config = {
-        'method': 'random'
+        'method': 'bayes',
+        'metric': {
+            'goal': 'maximize', 
+            'name': 'val_pearson'
+        },
     }
 
     # hyperparameters
     parameters_dict = {
         'epochs': {
-            'value': 8
+            'values': [8]  
         },
         'batch_size': {
-            'values': [2,4,8,16]
+            'values': [4]  
         },
+        # 'learning_rate': {
+        #     'distribution': 'log_uniform_values',
+        #     'min': 0.000018234535374473915, # 0.00002
+        #     'max': 0.000018234535374473915  # 0.00003
+        #                    # 4~4.5
+        # },
         'learning_rate': {
-            'distribution': 'log_uniform_values',
-            'min': 8e-6,
-            'max': 5e-5
+            'values': [0.000018234535374473915]
         },
+        # 'warmup_steps': {
+        #     'values': [0, 400, 800]
+        # },
         'weight_decay': {
-            'values': [ i/10 for i in range(2,6)]
+            'values': [0.5]
+            # 'values': ['linear', 'cosine']
         },
     }
     sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project="nlp04/korean_sentiment_analysis_dataset3")
+    sweep_id = wandb.sweep(sweep_config, project="snunlp_KR-ELECTRA-discriminator")
 
-    model = AutoModelForSequenceClassification.from_pretrained("nlp04/korean_sentiment_analysis_dataset3",num_labels=1,ignore_mismatched_sizes=True)
+    model_name = "snunlp/KR-ELECTRA-discriminator"
+    # model_name = "snunlp/KR-ELECTRA-discriminator"
+    # model_name = "monologg/koelectra-base-v3-discriminator"
+    # model_name = "lighthouse/mdeberta-v3-base-kor-further"
+    # model_name = "jhn9803/Contract-new-tokenizer-mDeBERTa-v3-kor-further"
+
+    train_data_name = 'best_data_v1.csv'
+    max_length = 256  # 512
+    
+    # model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
+
 
     #model = transformers.AutoModelForSequenceClassification.from_pretrained(
     #   'C:/Users/tm011/PycharmProjects/NLP_COMP/checkpoint/checkpoint-6993')
-    Train_textDataset = Train_val_TextDataset('./data/train.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="nlp04/korean_sentiment_analysis_dataset3")
-    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=512,model_name="nlp04/korean_sentiment_analysis_dataset3")
+    Train_textDataset = Train_val_TextDataset(f'./data/{train_data_name}',['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
+    Val_textDataset = Train_val_TextDataset('./data/dev.csv',['sentence_1', 'sentence_2'],'label','binary-label',max_length=max_length,model_name=model_name)
 
 
     def model_init():
-        model = AutoModelForSequenceClassification.from_pretrained("nlp04/korean_sentiment_analysis_dataset3",num_labels=1,ignore_mismatched_sizes=True)
+        model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
         return model
 
 
@@ -113,18 +138,20 @@ if __name__ == '__main__':
             config = wandb.config
             t = config.learning_rate
             args = TrainingArguments(
-                f"E:/nlp/checkpoint/baseline_Test_fine_{t}",
+                f'param_sweep/checkpoint/snunlp/KR-ELECTRA-discriminator',
                 evaluation_strategy="epoch",
-                save_strategy="epoch",
+                save_strategy= 'epoch', 
+                # save_strategy="no",
                 report_to='wandb',
                 learning_rate=config.learning_rate,
                 per_device_train_batch_size=config.batch_size,
                 per_device_eval_batch_size=config.batch_size,
                 num_train_epochs=config.epochs,
                 weight_decay=config.weight_decay,
-                load_best_model_at_end=True,
+                # load_best_model_at_end=True,
                 dataloader_num_workers=4,
                 logging_steps=200,
+                seed=42
             )
             trainer = Trainer(
                 model_init = model_init,
