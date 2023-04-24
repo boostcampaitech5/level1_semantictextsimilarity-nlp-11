@@ -1,32 +1,31 @@
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-from utils import compute_pearson_correlation, seed_everything
+from utils import compute_pearson_correlation, load_yaml,seed_everything
 from augmentation import augment
-from dataloader import Dataset
+from dataloader import CustomDataset
+import os
 import torch
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-import os
-from utils import load_yaml
-
-
 prj_dir = os.path.dirname(os.path.abspath(__file__))
 
 if __name__ == '__main__':
-
+    
+    # name_list = [xlm_roberta_large,snunlp,kykim]
+    model_name = 'xlm_roberta_large'
     config_path = os.path.join(prj_dir, 'config_yaml', 'kykim.yaml')
     config = load_yaml(config_path)
+    seed_everything(config['seed'])
 
     if (os.path.isfile(config['aug_data_folder']['Train_data'])) == False:
-        augment()
+        augment( config['data_folder']['Train_data'], config['aug_data_folder']['Train_data'])
 
     model = AutoModelForSequenceClassification.from_pretrained(config['architecture'], num_labels=1,ignore_mismatched_sizes=True)
 
-    Train_textDataset = Dataset(config['aug_data_folder']['Train_data'], 'train', ['sentence_1', 'sentence_2'], 'label','binary-label', max_length=256,model_name=config['architecture'])
-    Val_textDataset = Dataset(config['aug_data_folder']['Val_data'], 'val', ['sentence_1', 'sentence_2'], 'label','binary-label', max_length=256,model_name=config['architecture'])
-
+    Train_textDataset = CustomDataset(config['aug_data_folder']['Train_data'], 'train', ['sentence_1', 'sentence_2'], 'label','binary-label', max_length=256,model_name=config['architecture'])
+    Val_textDataset = CustomDataset(config['aug_data_folder']['Val_data'], 'val', ['sentence_1', 'sentence_2'], 'label','binary-label', max_length=256,model_name=config['architecture'])
+    
     args = TrainingArguments(
-        os.path.join(prj_dir,'Save_folder',config['name']),
+        os.path.join(prj_dir, 'save_folder', config['name']),
         evaluation_strategy="epoch",
         save_strategy="epoch",
         learning_rate=config['lr'],
@@ -51,3 +50,4 @@ if __name__ == '__main__':
     )
 
     trainer.train()
+

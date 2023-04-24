@@ -3,7 +3,7 @@ from tqdm.auto import tqdm
 import pandas as pd 
 import torch
 
-class Dataset(torch.utils.data.Dataset):
+class CustomDataset(torch.utils.data.Dataset):
     
     def __init__(self,data_file, state, text_columns, target_columns=None, delete_columns=None, max_length=512, model_name='klue/roberta-small'):
         self.state = state
