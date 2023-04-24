@@ -6,7 +6,7 @@ from transformers import AutoTokenizer
 from torch.utils.data import DataLoader
 from soynlp.normalizer import repeat_normalize
 from soynlp.tokenizer import RegexTokenizer
-
+import torch.nn.functional as F
 tokenizer = RegexTokenizer()
 stopwords = pd.read_csv('./data/stopwords.csv',encoding='cp949')
 
@@ -59,9 +59,9 @@ class Infer_TextDataset(torch.utils.data.Dataset):
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/elector/train_dev/checkpoint-70')
+    model = transformers.AutoModelForSequenceClassification.from_pretrained('E:/nlp/checkpoint/elector/electra-kor-base_jehyun/checkpoint-7960')
     model.to(device)
-    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],None,None,max_length=256,model_name="kykim/electra-kor-base")
+    test_textDataset = Infer_TextDataset('./data/test.csv',['sentence_1', 'sentence_2'],None,None,max_length=256,model_name="xlm-roberta-large")
     test_dataloader = DataLoader(dataset=test_textDataset,
                                  batch_size=4,
                                  num_workers=0,
@@ -76,7 +76,7 @@ if __name__ == '__main__':
             y_pred = logits.detach().cpu().numpy()
             score.extend(y_pred)
     score = list(float(i) for i in score)
-    #predictions = list(round(float(i), 1) for i in torch.cat(output))
+    # predictions = list(round(float(i), 1) for i in torch.cat(output))
     output = pd.read_csv('./data/sample_submission.csv')
     output['target'] = score
-    output.to_csv('2023-04-16_model_elctor_train_dev.csv', index=False)
+    output.to_csv('./esnb_indegrient/xlm-roberta-large_consine_9e-6.csv', index=False)
