@@ -1,0 +1,31 @@
+##kykim.yaml
+
+#name
+name: kykim
+
+# System
+gpu_num: 4
+seed: 43
+
+# Model
+architecture: kykim/electra-kor-base
+
+# Trainer
+lr: 0.00002071889728509824
+n_epochs: 10
+batch_size: 16
+weight_decay: 0.5
+scheduler: linear
+
+#data
+data_folder:
+  Train_data: ./data/train.csv
+  Val_data: ./data/val.csv
+  Test_data: ./data/test.csv
+
+aug_data_folder:
+  Train_data: ./data/aug_train.csv
+  Val_data: ./data/aug_val.csv
+  Test_data: ./data/aug_test.csv
+
+

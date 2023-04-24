@@ -1,0 +1,27 @@
+##test.yaml
+
+#name
+name:
+  xlm_robberta_large: xlm-roberta-large
+  snunlp: snunlp/KR-ELECTRA-discriminator
+  kykim: kykim/electra-kor-base
+
+# System
+gpu_num: 0
+seed: 43
+
+# Model
+checkpoint:
+  xlm_robberta_large: xlm-roberta-large/checkpoint-number
+  snunlp: snunlp/checkpoint-number
+  kykim: kykim/checkpoint-number
+
+# Trainer
+batch_size: 4
+
+#data
+data_folder:
+  Train_data: ./data/train.csv
+  Val_data: ./data/val.csv
+  Test_data: ./data/test.csv
+
