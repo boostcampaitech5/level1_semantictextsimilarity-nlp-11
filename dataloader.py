@@ -44,5 +44,9 @@ class Dataset(torch.utils.data.Dataset):
         if self.state == 'test':
             return inputs
         else : 
+            try:
+                targets = data[self.target_columns].values.tolist()
+            except:
+                targets = []
             return inputs, targets
 
