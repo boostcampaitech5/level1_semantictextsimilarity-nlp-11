@@ -52,7 +52,7 @@ if __name__ == '__main__':
             logits = y_pred.logits
             y_pred = logits.detach().cpu().numpy()
             score.extend(y_pred)
-    score = list(round(float(i), 1) for i in score)
+    score = list(float(i) for i in score)
     #predictions = list(round(float(i), 1) for i in torch.cat(output))
     output = pd.read_csv('./data/sample_submission.csv')
     output['target'] = score

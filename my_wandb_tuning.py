@@ -1,18 +1,13 @@
 import pandas as pd
 from tqdm.auto import tqdm
-import transformers
 import torch
-from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer, AutoModelForPreTraining
-from transformers import ElectraModel, ElectraTokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, TrainingArguments, Trainer
 import torch
 import pandas as pd
-from tqdm import tqdm
-from transformers import AutoTokenizer, AutoModelForMaskedLM
 import numpy as np
 from scipy.stats import pearsonr
 import random
 import os
-from datetime import datetime
 import wandb
 
 
@@ -81,33 +76,35 @@ if __name__ == '__main__':
     # hyperparameters
     parameters_dict = {
         'epochs': {
-            'values': [7, 8, 9]  # 6, 7
+            'values': [8, 10]  # 6, 7
         },
         'batch_size': {
-            'values': [32, 64, 128]  # 16
+            'values': [4, 8, 16]  # 16
         },
         'learning_rate': {
             'distribution': 'log_uniform_values',
-            'min': 3.5e-5, # 0.00002
-            'max': 4.0e-5  # 0.00003
+            'min': 2e-5, # 0.00002
+            'max': 4e-5  # 0.00003
                            # 4~4.5
         },
         'warmup_steps': {
-            'values': [0, 400, 800]
+            'values': [0, 800]
         },
         'weight_decay': {
-            'values': [0.4, 0.5, 0.6]
+            'values': [0.5, 0.6, 0.7]
         },
     }
     sweep_config['parameters'] = parameters_dict
-    sweep_id = wandb.sweep(sweep_config, project="KR-ELECTRA-discriminator_new")
+    sweep_id = wandb.sweep(sweep_config, project="koelectra-base-v3-discriminator-best-2")
 
-    model_name = "snunlp/KR-ELECTRA-discriminator"
+    model_name = "monologg/koelectra-base-v3-discriminator"
+    # model_name = "lighthouse/mdeberta-v3-base-kor-further"
+    # model_name = "snunlp/KR-ELECTRA-discriminator"
     # model_name = "monologg/koelectra-base-v3-discriminator"
     # model_name = "lighthouse/mdeberta-v3-base-kor-further"
     # model_name = "jhn9803/Contract-new-tokenizer-mDeBERTa-v3-kor-further"
 
-    train_data_name = 'train_switched_augment_with_back_translation.csv'
+    train_data_name = 'best_data_v2.csv'
     max_length = 256  # 512
     
     # model = AutoModelForSequenceClassification.from_pretrained(model_name,num_labels=1,ignore_mismatched_sizes=True)
@@ -129,7 +126,7 @@ if __name__ == '__main__':
             config = wandb.config
             t = config.learning_rate
             args = TrainingArguments(
-                f'param_sweep/checkpoint/{model_name}/{train_data_name}/{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}',
+                f'D:/BoostCamp/koelectra-base-v3-discriminator/{t}',
                 evaluation_strategy="epoch",
                 save_strategy="epoch",
                 report_to='wandb',
