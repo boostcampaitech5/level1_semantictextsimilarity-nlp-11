@@ -1,0 +1,31 @@
+##xlm_robert_large.yaml
+
+#name
+name: xlm_roberta_large
+
+# System
+gpu_num: 4
+seed: 43
+
+# Model
+architecture: xlm-roberta-large
+
+# Trainer
+lr: 9e-6
+n_epochs: 10
+batch_size: 16
+weight_decay: 0.0
+scheduler: cosine
+
+#data
+data_folder:
+  Train_data: ./data/train.csv
+  Val_data: ./data/val.csv
+  Test_data: ./data/test.csv
+
+aug_data_folder:
+  Train_data: ./data/aug_train.csv
+  Val_data: ./data/aug_val.csv
+  Test_data: ./data/aug_test.csv
+
+

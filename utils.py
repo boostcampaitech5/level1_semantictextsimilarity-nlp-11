@@ -1,9 +1,10 @@
 from scipy.stats import pearsonr
+import numpy as np
+import torch.backends.cudnn as cudnn
 import os
 import random
-import numpy as np
+import yaml
 import torch
-import torch.backends.cudnn as cudnn
 
 def compute_pearson_correlation(pred: torch.tensor) -> dict:
     """
@@ -33,3 +34,7 @@ def seed_everything(seed: int) -> None:
     torch.cuda.manual_seed(seed)
     cudnn.deterministic = True
     cudnn.benchmark = True
+
+def load_yaml(path):
+	with open(path, 'r') as f:
+		return yaml.load(f, Loader=yaml.FullLoader)
