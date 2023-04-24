@@ -38,3 +38,4 @@ class Dataset(torch.utils.data.Dataset):
             targets = []
         inputs = self.tokenizing(data)
         return inputs, targets
+
