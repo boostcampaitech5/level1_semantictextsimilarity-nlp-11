@@ -13,8 +13,8 @@ if __name__ == '__main__':
     config_path = os.path.join(prj_dir, 'config_yaml', 'test.yaml')
     config = load_yaml(config_path)
 
-    #name_list = [xlm_robberta_large,snunlp,kykim]
-    model_name = 'xlm_roberta_large'
+    #name_list = [xlm_roberta_large,snunlp,]
+    model_name = 'kykim'
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = transformers.AutoModelForSequenceClassification.from_pretrained(os.path.join(prj_dir, 'save_folder', config['checkpoint'][model_name]))
 
@@ -34,6 +34,6 @@ if __name__ == '__main__':
             y_pred = logits.detach().cpu().numpy()
             score.extend(y_pred)
     score = list(float(i) for i in score)
-    output = pd.read_csv(config['data_folder']['Test_data'])
+    output = pd.read_csv(config['data_folder']['submission'])
     output['target'] = score
-    output.to_csv(f'./output/{model_name}.csv', index=False)
+    output.to_csv(f'./data/{model_name}.csv', index=False)

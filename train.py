@@ -22,7 +22,7 @@ if __name__ == '__main__':
     model = AutoModelForSequenceClassification.from_pretrained(config['architecture'], num_labels=1,ignore_mismatched_sizes=True)
 
     Train_textDataset = CustomDataset(config['aug_data_folder']['Train_data'], 'train', ['sentence_1', 'sentence_2'], 'label','binary-label', max_length=256,model_name=config['architecture'])
-    Val_textDataset = CustomDataset(config['aug_data_folder']['Val_data'], 'val', ['sentence_1', 'sentence_2'], 'label','binary-label', max_length=256,model_name=config['architecture'])
+    Val_textDataset = CustomDataset(config['data_folder']['Val_data'], 'val', ['sentence_1', 'sentence_2'], 'label','binary-label', max_length=256,model_name=config['architecture'])
     
     args = TrainingArguments(
         os.path.join(prj_dir, 'save_folder', config['name']),
