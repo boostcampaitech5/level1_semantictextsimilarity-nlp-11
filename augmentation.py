@@ -26,3 +26,12 @@ def copy_sentence(data_path):
 def concat_data(data_path, *dataframes):
     result = pd.concat(dataframes)
     result.to_csv(data_path, index = False)
+
+def augment(source_data_path, dest_data_path):
+    under_sampled = under_sampling(source_data_path)
+    swapped_sentence = swap_sentence(source_data_path)
+    copied_sentence = copy_sentence(source_data_path)
+    concat_data(dest_data_path, under_sampled, swapped_sentence, copied_sentence)
+
+if __name__ == "__main__":
+    augment("./data/train.csv", "./data/augment.csv")
