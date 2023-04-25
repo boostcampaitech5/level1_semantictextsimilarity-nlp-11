@@ -2,22 +2,20 @@ import os
 import pandas as pd
 import numpy as np
 
-def ensemble(path: str):
-    file_path = os.listdir(path)
-    output_files = [file for file in file_path if file.endswith('.csv')]
+def ensemble(*data_path_list: str):
     output_list = []
 
-    for output in output_files:
-        df = pd.read_csv(os.path.join(path, output))
+    for data_path in data_path_list:
+        df = pd.read_csv(data_path)
         output_list.append(np.array(df))
     
-    ensb_result = []
+    esnb_result = []
     for i in range(len(output_list[0])):
         average = sum([output[i][1] / len(output_list) for output in output_list])
-        ensb_result.append(average)
+        esnb_result.append(average)
     
-    e
-    return ensb_result
+    esnb_dataframe = pd.DataFrame({"id": output_list[0][:,0], "target": esnb_result})
+    esnb_dataframe.to_csv("./esnb/esnb.csv", index=False)
 
 
 
