@@ -8,7 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 import re
 # !pip install git+https://github.com/jungin500/py-hanspell # hanspell
-
+# !pip install git+https://github.com/haven-jeon/PyKoSpacing.git #spacing
 
 
 def under_sampling(data_path: str)->pd.DataFrame:
@@ -98,6 +98,7 @@ def apply_hanspell(data: pd.DataFrame)->pd.DataFrame:
         Returns :
             data (DataFrame): 맞춤법을 교정한 데이터
     '''
+    tqdm.pandas()
     data['sentence_1'] = data['sentence_1'].progress_map(han_spell)
     data['sentence_2'] = data['sentence_2'].progress_map(han_spell)
     data = data.dropna(subset=['sentence_1'])
@@ -141,16 +142,18 @@ def change_josa(none: str, josa: str)-> str:
         return josa
 
 
-def make_sentence(sentence:str, compare: str, sym: str)-> str:
+def make_sentence(sentence:list, compare: str, sym: str)-> str:
     '''
     sentence_1, sentence_2에 모두 등장하는 명사를 교체하고 조사를 교정
         Args :
-            sentence (str): 동의어로 교체될 문장
+            sentence (list): 형태소 분석한 문장
             compare  (str): 문장에서 바꿀 명사
             sym      (str): 문장 삽입되는 동의어
         Returns : 
             replace_sentence (str): 동의어로 교체한 문장
     '''
+    spacing = Spacing()
+    okt = Okt()
     replace_sentence = []
     check = set(['이', '가', '을', '를', '과', '와'])
     for j in range(len(sentence)):
