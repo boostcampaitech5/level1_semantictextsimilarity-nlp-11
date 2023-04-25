@@ -6,6 +6,7 @@ from hanspell import spell_checker
 from soynlp.normalizer import repeat_normalize
 import pandas as pd
 from tqdm import tqdm
+import re
 # !pip install git+https://github.com/jungin500/py-hanspell # hanspell
 
 
