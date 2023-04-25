@@ -1,17 +1,21 @@
-from scipy.stats import pearsonr
-import numpy as np
-import torch.backends.cudnn as cudnn
 import os
 import random
-import yaml
+
+import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
+import transformers
+import yaml
+from scipy.stats import pearsonr
 
 
-def compute_pearson_correlation(pred: torch.tensor) -> dict:
+def compute_pearson_correlation(
+    pred: transformers.trainer_utils.EvalPrediction,
+) -> dict:
     """
     피어슨 상관 계수를 계산해주는 함수
         Args:
-            pred (torch.tensor): 모델의 예측값과 레이블을 포함한 데이터
+            pred (torch.Tensor): 모델의 예측값과 레이블을 포함한 데이터
         Returns:
             perason_correlation (dict): 입력값을 통해 계산한 피어슨 상관 계수
     """

@@ -11,7 +11,7 @@ seed: 43
 architecture: xlm-roberta-large
 
 # Trainer
-lr: 9e-6
+lr: 0.000009
 n_epochs: 10
 batch_size: 16
 weight_decay: 0.0
@@ -19,12 +19,11 @@ scheduler: cosine
 
 #data
 data_folder:
-  Train_data: ./data/train.csv
-  Val_data: ./data/dev.csv
-  Test_data: ./data/test.csv
-  
+  train_data: ./data/train.csv
+  val_data: ./data/val.csv
+  test_data: ./data/test.csv
+
 aug_data_folder:
-  Train_data: ./data/aug_train.csv
-
-
-
+  train_data: ./data/aug_train.csv
+  tal_data: ./data/aug_val.csv
+  test_data: ./data/aug_test.csv

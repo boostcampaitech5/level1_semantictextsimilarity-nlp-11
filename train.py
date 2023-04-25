@@ -1,50 +1,52 @@
-from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-from utils import compute_pearson_correlation, load_yaml, seed_everything
+import os
+
+import torch
+from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments
+
 from augmentation import augment
 from dataloader import CustomDataset
-import os
-import torch
+from utils import compute_pearson_correlation, load_yaml, seed_everything
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 prj_dir = os.path.dirname(os.path.abspath(__file__))
 
 if __name__ == "__main__":
-    # name_list = [xlm_roberta_large,snunlp,kykim]
-    model_name = "xlm_roberta_large"
-    config_path = os.path.join(prj_dir, "config_yaml", "kykim.yaml")
+    model_list = ["xlm_roberta_large", "snunlp", "kykim"]
+    model_name = model_list[0]
+    config_path = os.path.join(prj_dir, "config_yaml", f"{model_name}.yaml")
     config = load_yaml(config_path)
     seed_everything(config["seed"])
 
-    if (os.path.isfile(config["aug_data_folder"]["Train_data"])) == False:
+    if (os.path.isfile(config["aug_data_folder"]["train_data"])) == False:
         augment(
-            config["data_folder"]["Train_data"], config["aug_data_folder"]["Train_data"]
+            config["data_folder"]["train_data"], config["aug_data_folder"]["train_data"]
         )
 
     model = AutoModelForSequenceClassification.from_pretrained(
         config["architecture"], num_labels=1, ignore_mismatched_sizes=True
     )
 
-    Train_textDataset = CustomDataset(
-        config["aug_data_folder"]["Train_data"],
-        "train",
-        ["sentence_1", "sentence_2"],
-        "label",
-        "binary-label",
+    train_text_dataset = CustomDataset(
+        data_file=config["aug_data_folder"]["train_data"],
+        state="train",
+        text_columns=["sentence_1", "sentence_2"],
+        target_columns="label",
+        delete_columns="binary-label",
         max_length=256,
         model_name=config["architecture"],
     )
-    Val_textDataset = CustomDataset(
-        config["data_folder"]["Val_data"],
-        "val",
-        ["sentence_1", "sentence_2"],
-        "label",
-        "binary-label",
+    val_text_dataset = CustomDataset(
+        data_file=config["data_folder"]["val_data"],
+        state="val",
+        text_columns=["sentence_1", "sentence_2"],
+        target_columns="label",
+        delete_columns="binary-label",
         max_length=256,
         model_name=config["architecture"],
     )
 
     args = TrainingArguments(
-        os.path.join(prj_dir, "save_folder", config["name"]),
+        output_dir=os.path.join(prj_dir, "save_folder", config["name"]),
         evaluation_strategy="epoch",
         save_strategy="epoch",
         learning_rate=config["lr"],
@@ -63,8 +65,8 @@ if __name__ == "__main__":
     trainer = Trainer(
         model=model,
         args=args,
-        train_dataset=Train_textDataset,
-        eval_dataset=Val_textDataset,
+        train_dataset=train_text_dataset,
+        eval_dataset=val_text_dataset,
         compute_metrics=compute_pearson_correlation,
     )
 

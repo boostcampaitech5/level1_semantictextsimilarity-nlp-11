@@ -19,11 +19,13 @@ scheduler: linear
 
 #data
 data_folder:
-  Train_data: ./data/train.csv
-  Val_data: ./data/dev.csv
-  Test_data: ./data/test.csv
+  train_data: ./data/train.csv
+  val_data: ./data/val.csv
+  test_data: ./data/test.csv
 
 aug_data_folder:
-  Train_data: ./data/aug_train.csv
+  train_data: ./data/aug_train.csv
+  val_data: ./data/aug_val.csv
+  test_data: ./data/aug_test.csv
 
 

@@ -3,13 +3,10 @@ import re
 
 import pandas as pd
 from hanspell import spell_checker
-from konlpy.tag import *
+from konlpy.tag import Okt
 from pykospacing import Spacing
 from soynlp.normalizer import repeat_normalize
-from tqdm import tqdm
-
-# !pip install git+https://github.com/jungin500/py-hanspell # hanspell
-# !pip install git+https://github.com/haven-jeon/PyKoSpacing.git #spacing
+from tqdm.auto import tqdm
 
 
 def under_sampling(data_path: str) -> pd.DataFrame:
@@ -43,19 +40,20 @@ def swap_sentence(data_path: str) -> pd.DataFrame:
     return df_swapped
 
 
-def copy_sentence(data_path: str) -> pd.DataFrame:
+def copy_sentence(data_path: str, index_min=250, index_max=750) -> pd.DataFrame:
     """
     sentence 1과 sentence 2에 같은 문장을 배치해 5점짜리 데이터를 생성하는 함수
         Args:
             data_path (str): 증강하고자 하는 데이터의 경로
+            index_min (int): 증강할 데이터에서 슬라이싱 시작  defalt = 250
+            index_max (int): 증강할 데이터에서 슬라이싱 끝    defalt = 750
         Returns:
             df_copied (DataFrame): 증강된 데이터
     """
     df = pd.read_csv(data_path)
-    df_copied = df[df["label"] == 0][250:750].copy()
+    df_copied = df[df["label"] == 0][index_min:index_max].copy()
     df_copied["sentence_1"] = df_copied["sentence_2"]
     df_copied["label"] = 5.0
-    df_copied.reset_index(inplace=True)
     return df_copied
 
 
@@ -71,13 +69,12 @@ def concat_data(data_path: str, *dataframes: pd.DataFrame):
 
 
 def augment(source_data_path, dest_data_path):
-    under_sampled = under_sampling(source_data_path)
-    swapped_sentence = swap_sentence(source_data_path)
-    copied_sentence = copy_sentence(source_data_path)
-    concat_data(dest_data_path, under_sampled, swapped_sentence, copied_sentence)
-
-
-# SR Augmentation
+    df_under_sampled = under_sampling(source_data_path)
+    df_swapped_sentence = swap_sentence(source_data_path)
+    df_copied_sentence = copy_sentence(source_data_path)
+    concat_data(
+        dest_data_path, df_under_sampled, df_swapped_sentence, df_copied_sentence
+    )
 
 
 def han_spell(text: str) -> str:
@@ -96,7 +93,7 @@ def han_spell(text: str) -> str:
     return correct_text
 
 
-def apply_hanspell(data: pd.DataFrame) -> pd.DataFrame:
+def apply_hanspell(df: pd.DataFrame) -> pd.DataFrame:
     """
     han_spell()을 데이터에 적용
         Args :
@@ -105,11 +102,11 @@ def apply_hanspell(data: pd.DataFrame) -> pd.DataFrame:
             data (DataFrame): 맞춤법을 교정한 데이터
     """
     tqdm.pandas()
-    data["sentence_1"] = data["sentence_1"].progress_map(han_spell)
-    data["sentence_2"] = data["sentence_2"].progress_map(han_spell)
-    data = data.dropna(subset=["sentence_1"])
-    data = data.dropna(subset=["sentence_2"])
-    return data
+    df["sentence_1"] = df["sentence_1"].progress_map(han_spell)
+    df["sentence_2"] = df["sentence_2"].progress_map(han_spell)
+    df = df.dropna(subset=["sentence_1"])
+    df = df.dropna(subset=["sentence_2"])
+    return df
 
 
 def check_end(noun: str) -> bool:
@@ -127,7 +124,7 @@ def check_end(noun: str) -> bool:
         return True
 
 
-def change_josa(none: str, josa: str) -> str:
+def change_josa(noun: str, josa: str) -> str:
     """
     명사의 끝음절 받침 여부에 따라서 조사 교체
         Args :
@@ -137,13 +134,13 @@ def change_josa(none: str, josa: str) -> str:
             josa (str): 교정한 조사
     """
     if josa == "이" or josa == "가":
-        return "이" if check_end(none) else "가"
+        return "이" if check_end(noun) else "가"
     elif josa == "은" or josa == "는":
-        return "은" if check_end(none) else "는"
+        return "은" if check_end(noun) else "는"
     elif josa == "을" or josa == "를":
-        return "을" if check_end(none) else "를"
+        return "을" if check_end(noun) else "를"
     elif josa == "과" or josa == "와":
-        return "과" if check_end(none) else "와"
+        return "과" if check_end(noun) else "와"
     else:
         return josa
 
@@ -159,7 +156,6 @@ def make_sentence(sentence: list, compare: str, sym: str) -> str:
             replace_sentence (str): 동의어로 교체한 문장
     """
     spacing = Spacing()
-    okt = Okt()
     replace_sentence = []
     check = set(["이", "가", "을", "를", "과", "와"])
     for j in range(len(sentence)):
@@ -198,7 +194,6 @@ def sr_noun_replace(data_path: str, wordnet_path: str) -> pd.DataFrame:
         wordnet = pickle.load(f)
 
     data = pd.read_csv(data_path)
-    spacing = Spacing()
     okt = Okt()
     data = apply_hanspell(data)
     n1, n2 = data["sentence_1"], data["sentence_2"]
@@ -235,7 +230,7 @@ def sr_noun_replace(data_path: str, wordnet_path: str) -> pd.DataFrame:
     return sr_sentence
 
 
-def sr_swap_sentence(df: pd.DataFrame, sr=False) -> pd.DataFrame:
+def sr_swap_sentence(df: pd.DataFrame) -> pd.DataFrame:
     """
     sentence 1과 sentence 2의(1<= label <3) 위치를 바꾸어 증강하는 함수
         Args:
@@ -247,41 +242,19 @@ def sr_swap_sentence(df: pd.DataFrame, sr=False) -> pd.DataFrame:
     df_swapped = df.copy()
     df_swapped["sentence_1"] = df["sentence_2"]
     df_swapped["sentence_2"] = df["sentence_1"]
-    if sr == True:
-        df_swapped = df_swapped[(df_swapped["label"] >= 1) & (df_swapped["label"] < 3)]
-    else:
-        df_swapped = df_swapped[df_swapped["label"] != 0]
+    df_swapped = df_swapped[(df_swapped["label"] >= 1) & (df_swapped["label"] < 3)]
 
     return df_swapped
 
 
-def sr_copy_sentence(data_path: str, index_min=250, index_max=750) -> pd.DataFrame:
-    """
-    sentence 1과 sentence 2에 같은 문장을 배치해 5점짜리 데이터를 생성하는 함수
-        Args:
-            data_path (str): 증강하고자 하는 데이터의 경로
-            index_min (int): 증강할 데이터에서 슬라이싱 시작  defalt = 250
-            index_max (int): 증강할 데이터에서 슬라이싱 끝    defalt = 750
-        Returns:
-            df_copied (DataFrame): 증강된 데이터
-    """
-    df = pd.read_csv(data_path)
-    df_copied = df[df["label"] == 0][index_min:index_max].copy()
-    df_copied["sentence_1"] = df_copied["sentence_2"]
-    df_copied["label"] = 5.0
-    return df_copied
-
-
 def sr_augment(source_data_path, dest_data_path, wordnet_path):
-    source = pd.read_csv(source_data_path)
-    sr_noun_replaced = sr_noun_replace(source_data_path, wordnet_path)
-    sr_noun_replaced = sr_noun_replaced[sr_noun_replaced["label"] >= 1]
-    sr_source_noun = pd.concat([source, sr_noun_replaced])
-    sr_swapped_sentence = sr_swap_sentence(sr_source_noun, sr=True)
-    sr_copied_sentence = sr_copy_sentence(
-        source_data_path, index_min=250, index_max=1250
-    )
-    concat_data(dest_data_path, sr_source_noun, sr_swapped_sentence, sr_copied_sentence)
+    df_source = pd.read_csv(source_data_path)
+    df_noun_replaced = sr_noun_replace(source_data_path, wordnet_path)
+    df_noun_replaced = df_noun_replaced[df_noun_replaced["label"] >= 1]
+    df_source_noun = pd.concat([df_source, df_noun_replaced])
+    df_swapped_sentence = sr_swap_sentence(df_source_noun)
+    df_copied_sentence = copy_sentence(source_data_path, index_min=250, index_max=1250)
+    concat_data(dest_data_path, df_source_noun, df_swapped_sentence, df_copied_sentence)
 
 
 if __name__ == "__main__":

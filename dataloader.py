@@ -1,7 +1,7 @@
-from transformers import AutoTokenizer
-from tqdm.auto import tqdm
 import pandas as pd
 import torch
+from tqdm.auto import tqdm
+from transformers import AutoTokenizer
 
 
 class CustomDataset(torch.utils.data.Dataset):

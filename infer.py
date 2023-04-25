@@ -15,24 +15,24 @@ if __name__ == "__main__":
     config_path = os.path.join(prj_dir, "config_yaml", "test.yaml")
     config = load_yaml(config_path)
 
-    # name_list = [xlm_roberta_large,snunlp,]
-    model_name = "kykim"
+    model_list = ["xlm_roberta_large", "snunlp", "kykim"]
+    model_name = model_list[0]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = transformers.AutoModelForSequenceClassification.from_pretrained(
         os.path.join(prj_dir, "save_folder", config["checkpoint"][model_name])
     )
 
-    test_textDataset = CustomDataset(
-        config["data_folder"]["Test_data"],
-        "test",
-        ["sentence_1", "sentence_2"],
-        None,
-        None,
+    test_text_dataset = CustomDataset(
+        data_file=config["data_folder"]["test_data"],
+        state="test",
+        text_columns=["sentence_1", "sentence_2"],
+        target_columns=None,
+        delete_columns=None,
         max_length=256,
         model_name=config["name"][model_name],
     )
     test_dataloader = DataLoader(
-        dataset=test_textDataset,
+        dataset=test_text_dataset,
         batch_size=4,
         num_workers=0,
         shuffle=False,
