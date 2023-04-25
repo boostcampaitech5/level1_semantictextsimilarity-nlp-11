@@ -207,18 +207,22 @@ def sr_noun_replace(data_path: str, wordnet_path: str)-> pd.DataFrame:
 
 
 
-def sr_swap_sentence(df: pd.DataFrame)-> pd.DataFrame:
+def sr_swap_sentence(df: pd.DataFrame, sr = False)-> pd.DataFrame:
     """
     sentence 1과 sentence 2의(1<= label <3) 위치를 바꾸어 증강하는 함수
         Args:
             data_path (str): 증강하고자 하는 데이터의 경로
+            sr (bool): swap 범위
         Returns:
             df_swapped (DataFrame): 증강된 데이터
     """
     df_swapped = df.copy()
     df_swapped["sentence_1"] = df["sentence_2"]
     df_swapped["sentence_2"] = df["sentence_1"]
-    df_swapped = df_swapped[(df_swapped['label'] >= 1) & (df_swapped['label'] < 3 )]
+    if sr == True:
+        df_swapped = df_swapped[(df_swapped['label'] >= 1) & (df_swapped['label'] < 3 )]
+    else:
+        df_swapped = df_swapped[df_swapped['label'] != 0]
 
     return df_swapped
 
@@ -244,7 +248,7 @@ def sr_augment(source_data_path, dest_data_path, wordnet_path):
     sr_noun_replaced = sr_noun_replace(source_data_path, wordnet_path)
     sr_noun_replaced = sr_noun_replaced[sr_noun_replaced['label'] >= 1 ]
     sr_source_noun = pd.concat([source, sr_noun_replaced])
-    sr_swapped_sentence = sr_swap_sentence(sr_source_noun)
+    sr_swapped_sentence = sr_swap_sentence(sr_source_noun, sr = True)
     sr_copied_sentence = sr_copy_sentence(source_data_path, index_min = 250, index_max=1250)
     concat_data(dest_data_path, sr_source_noun, sr_swapped_sentence, sr_copied_sentence)
 
