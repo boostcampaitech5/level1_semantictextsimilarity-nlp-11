@@ -97,7 +97,6 @@ def apply_hanspell(data: pd.DataFrame)->pd.DataFrame:
         Returns :
             data (DataFrame): 맞춤법을 교정한 데이터
     '''
-    tqdm.pandas()
     data['sentence_1'] = data['sentence_1'].progress_map(han_spell)
     data['sentence_2'] = data['sentence_2'].progress_map(han_spell)
     data = data.dropna(subset=['sentence_1'])
