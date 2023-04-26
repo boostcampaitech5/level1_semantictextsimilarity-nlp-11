@@ -1,10 +1,9 @@
 import os
 
 import torch
-from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments
-
 from augmentation import augment
 from dataloader import CustomDataset
+from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments
 from utils import compute_pearson_correlation, load_yaml, seed_everything
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -16,11 +15,6 @@ if __name__ == "__main__":
     config_path = os.path.join(prj_dir, "config_yaml", f"{model_name}.yaml")
     config = load_yaml(config_path)
     seed_everything(config["seed"])
-
-    if (os.path.isfile(config["aug_data_folder"]["train_data"])) == False:
-        augment(
-            config["data_folder"]["train_data"], config["aug_data_folder"]["train_data"]
-        )
 
     model = AutoModelForSequenceClassification.from_pretrained(
         config["architecture"], num_labels=1, ignore_mismatched_sizes=True
