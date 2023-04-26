@@ -50,4 +50,4 @@ if __name__ == "__main__":
     score = list(float(i) for i in score)
     output = pd.read_csv(config["data_folder"]["submission"])
     output["target"] = score
-    output.to_csv(f"./data/{model_name}.csv", index=False)
+    output.to_csv(f"./output/{model_name}.csv", index=False)
