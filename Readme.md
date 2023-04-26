@@ -43,11 +43,11 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 ## 🖥️ Project Introduction 
 
 
-|**프로젝트 주제**| **`Semantic Text Similarity (STS):`** 두 텍스트가 얼마나 유사한지 판단하는 NLP Task|
+|**프로젝트 주제**| **`Semantic Text Similarity (STS)`:** 두 텍스트가 얼마나 유사한지 판단하는 NLP Task|
 | --- | --- |
 |**프로젝트 구현내용**| 1. Hugging Face의 Pretrained 모델과STS 데이터셋을 활용해 두 문장의 0과 5사이의 유사도를 측정하는 AI모델을 구축 <br>2. 리더보드 평가지표인 피어슨 상관 계수(Pearson Correlation Coefficient ,PCC)에서 높은 점수(1에 가까운 점수)에 도달할 수 있도록 데이터 전처리, 증강, 하이퍼 파라미터 튜닝을 진행|
 |**개발 환경**|**• `GPU` :** Tesla V100 서버 5개 (RAM32G) / K80, T4, and P100 랜덤 할당(RAM52G) /GeForce RTX 4090ti 로컬 (RAM 24GB), Rtx3060ti 8gb 로컬 2대 (RAM 8 GB)<br>**• `개발 Tool` :** PyCharm, Jupyter notebook, VS Code [서버 SSH연결], Colab Pro +, wandb |
-|**협업 환경**|**•` Github Repository`:** Baseline 코드 공유 및 버전 관리, issue 페이지를 통하 실험 진행 <br>**•` Notion:`** STS 프로젝트 페이지를 통한 역할분담, 아이디어 브레인 스토밍, 대회관련 회의 내용 기록 <br>**• `SLACK, Zoom` :** 실시간 대면/비대면 회의|
+|**협업 환경**|**•` Github Repository`:** Baseline 코드 공유 및 버전 관리, issue 페이지를 통하 실험 진행 <br>**•` Notion`:** STS 프로젝트 페이지를 통한 역할분담, 아이디어 브레인 스토밍, 대회관련 회의 내용 기록 <br>**• `SLACK, Zoom` :** 실시간 대면/비대면 회의|
 
 ## 📁 Project Structure
 ```
