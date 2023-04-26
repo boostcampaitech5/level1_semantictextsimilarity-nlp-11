@@ -25,5 +25,3 @@ data_folder:
 
 aug_data_folder:
   train_data: ./data/aug_train.csv
-  tal_data: ./data/aug_val.csv
-  test_data: ./data/aug_test.csv
