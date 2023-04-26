@@ -3,10 +3,9 @@ import os
 import pandas as pd
 import torch
 import transformers
+from dataloader import CustomDataset
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
-
-from dataloader import CustomDataset
 from utils import load_yaml
 
 prj_dir = os.path.dirname(os.path.abspath(__file__))
@@ -50,4 +49,4 @@ if __name__ == "__main__":
     score = list(float(i) for i in score)
     output = pd.read_csv(config["data_folder"]["submission"])
     output["target"] = score
-    output.to_csv(f"./data/{model_name}.csv", index=False)
+    output.to_csv(f"./output/{model_name}.csv", index=False)
