@@ -107,14 +107,14 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 ### ⚠️ Requirements
 ```bash
 python=3.8
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip3 install transformers
-pip3 install pandas
-pip3 install scipy
-pip3 install soynlp
-pip3 install git+https://github.com/haven-jeon/PyKoSpacing.git
-pip3 install git+https://github.com/jungin500/py-hanspell
-pip3 install konlpy
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+pip install transformers
+pip install pandas
+pip install scipy
+pip install soynlp
+pip install git+https://github.com/haven-jeon/PyKoSpacing.git
+pip install git+https://github.com/jungin500/py-hanspell
+pip install konlpy
 ```
 
 ### ⌨️ How To install Requirements
@@ -123,7 +123,7 @@ pip3 install konlpy
 pip install -r requirements.txt
 ```
 
-### ⌨️How To Train 
+### ⌨️ How To Train 
 ```bash
 # 데이터 증강
 python3 augmentation.py
@@ -132,7 +132,6 @@ python3 train.py
 ```
 
 ### ⌨️ How To Infer output.csv
-#예측 명령어 output.csv 생성
 ```bash
 # infer.py 코드 실행 : 훈련된 모델 load + sample_submission을 이용한 train 진행
 python3 infer.py 
