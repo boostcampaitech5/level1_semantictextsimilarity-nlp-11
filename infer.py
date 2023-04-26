@@ -3,10 +3,9 @@ import os
 import pandas as pd
 import torch
 import transformers
+from dataloader import CustomDataset
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
-
-from dataloader import CustomDataset
 from utils import load_yaml
 
 prj_dir = os.path.dirname(os.path.abspath(__file__))
