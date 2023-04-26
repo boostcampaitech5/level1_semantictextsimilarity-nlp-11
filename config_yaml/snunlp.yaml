@@ -1,0 +1,29 @@
+##snunlpy.yaml
+
+#name
+name: snunlp
+
+# System
+gpu_num: 4
+seed: 43
+
+# Model
+architecture: snunlp/KR-ELECTRA-discriminator
+
+# Trainer
+lr: 1.896063848396791e-05
+n_epochs: 10
+batch_size: 4
+weight_decay: 0.3
+scheduler: linear
+
+#data
+data_folder:
+  train_data: ./data/train.csv
+  val_data: ./data/val.csv
+  test_data: ./data/test.csv
+
+aug_data_folder:
+  train_data: ./data/aug_train.csv
+
+
