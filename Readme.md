@@ -8,9 +8,9 @@
 ## 🎖️Project Leader Board 
 ![public_1st](https://img.shields.io/static/v1?label=Public%20LB&message=1st&color=yellow&logo=naver&logoColor=white") ![private_2nd](https://img.shields.io/static/v1?label=Private%20LB&message=2nd&color=silver&logo=naver&logoColor=white">)
 - 🥇 Public Leader Board
-![Public Leader Board](./readme_img/public_leader_board.png)
+<img width="1089" alt="public_leader_board" src="https://user-images.githubusercontent.com/81630351/234538736-4a1f4447-2aed-4187-9ac9-cf03cc65c507.png">
 - 🥈Private Leader Board 
-![Private Leader Board](./readme_img/private_leader_board.png)
+<img width="1089" alt="private_leader_board" src="https://user-images.githubusercontent.com/81630351/234539421-144d8ea6-a8ad-47c8-bee4-45c488ca4cfc.png">
 
 - [📈 NLP 11조 Project Wrap-Up report 살펴보기](https://github.com/boostcampaitech5/level1_semantictextsimilarity-nlp-11/blob/main/wrap-up_report/NLP%2011%EC%A1%B0%20Wrap-Up%20%EB%B3%B4%EA%B3%A0%EC%84%9C_%ED%8C%80%EC%B5%9C%EC%A2%85.pdf)
 
@@ -98,7 +98,7 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 
 *아래는 저희 프로젝트 진행과정을 담은 Gantt차트 입니다. 
 
-![img](./readme_img/road_map.png)
+![road_map](https://user-images.githubusercontent.com/81630351/234539749-d2f7423d-9895-4aeb-a458-4ae593bc4db8.png)
 
 <br>
 
