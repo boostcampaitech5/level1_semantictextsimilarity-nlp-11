@@ -1,3 +1,4 @@
-model.pt
 data/*
-output.csv
+model/*
+output/*
+esnb/*
