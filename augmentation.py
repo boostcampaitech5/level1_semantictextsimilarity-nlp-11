@@ -258,5 +258,5 @@ def sr_augment(source_data_path, dest_data_path, wordnet_path):
 
 
 if __name__ == "__main__":
-    augment("./data/train.csv", "./data/augment.csv")
-    sr_augment("./data/train.csv", "./data/sr_augment.csv", "./data/wordnet.pickle")
+    augment("./data/train.csv", "./data/aug_train.csv")
+    sr_augment("./data/train.csv", "./data/sr_augment.csv", "./wordnet/wordnet.pickle")
