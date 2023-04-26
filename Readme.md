@@ -32,7 +32,7 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 
 | 이름 | 역할 |
 | --- | --- |
-| **`강민재`** | **모델 튜닝**(`electra-kor-base , koelectra-base-v3-discriminator`),**데이터 증강**(`back translation / switching sentence pair /임의글자삽입및제거`),**데이터 전처리 실험**(`레이블 정수화 및 노이즈추가`),**Ensemble 실험**(`output 평균, 표준편차활용`),**EDA**(`글자수 기반 데이터 분포 분석`) |
+| **`강민재`** | **모델 튜닝**(<blockquote>electra-kor-base , koelectra-base-v3-discriminator</blockquote>),**데이터 증강**(`back translation / switching sentence pair /임의글자삽입및제거`),**데이터 전처리 실험**(`레이블 정수화 및 노이즈추가`),**Ensemble 실험**(`output 평균, 표준편차활용`),**EDA**(`글자수 기반 데이터 분포 분석`) |
 | **`김태민`** | **Hugging Face 기반 Baseline 코드 작성** , **Task에 적합한 모델 Search 및 분배** , **모델 실험 총괄** , **데이터 전처리 실험**(`Random Token Masking , Label Random Noise, Fill Random Token Mask, Source Tagging`), **Custom Loss 실험**(`Binary Cross Entropy + Focal Loss`),**모델 튜닝**(`xlm-roberta-large, electra-kor-base`),**모델 Ensemble** |
 | **`김주원`** | **모델 튜닝**(`kobigbird-bert-base, electra-kor-base`),**EDA**(`라벨 분포 데이터분석`),**EDA 기반 데이터 증강 아이디어 제시** , **데이터 증강**(`Easy Augmented DataSR 증강`),**팀 협업 프로세스 관리**(`Github 팀관리+ 팀 Notion 페이지관리`) ,**Custom Loss 실험**(`RMSE`) |
 | **`윤상원`** | **모델 튜닝**(`koelectra-base-finetuned-nsmc, KR-ELECTRA-discriminator 모델튜닝`),**데이터 증강**(`label rescaling, 단순복제데이터증강, 어순도치데이터증강, under sampling + swap sentence + copied sentence + uniform distribution + random noise`),**모델 Ensemble** |
@@ -43,11 +43,11 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 ## 🖥️ Project Introduction 
 
 
-|**프로젝트 주제**| **`Semantic Text Similarity (STS)`:** 두 텍스트가 얼마나 유사한지 판단하는 NLP Task|
+|**프로젝트 주제**| **`Semantic Text Similarity (STS)` :** 두 텍스트가 얼마나 유사한지 판단하는 NLP Task|
 | --- | --- |
 |**프로젝트 구현내용**| 1. Hugging Face의 Pretrained 모델과STS 데이터셋을 활용해 두 문장의 0과 5사이의 유사도를 측정하는 AI모델을 구축 <br>2. 리더보드 평가지표인 피어슨 상관 계수(Pearson Correlation Coefficient ,PCC)에서 높은 점수(1에 가까운 점수)에 도달할 수 있도록 데이터 전처리, 증강, 하이퍼 파라미터 튜닝을 진행|
 |**개발 환경**|**• `GPU` :** Tesla V100 서버 5개 (RAM32G) / K80, T4, and P100 랜덤 할당(RAM52G) /GeForce RTX 4090ti 로컬 (RAM 24GB), Rtx3060ti 8gb 로컬 2대 (RAM 8 GB)<br>**• `개발 Tool` :** PyCharm, Jupyter notebook, VS Code [서버 SSH연결], Colab Pro +, wandb |
-|**협업 환경**|**•` Github Repository`:** Baseline 코드 공유 및 버전 관리, issue 페이지를 통하 실험 진행 <br>**•` Notion`:** STS 프로젝트 페이지를 통한 역할분담, 아이디어 브레인 스토밍, 대회관련 회의 내용 기록 <br>**• `SLACK, Zoom` :** 실시간 대면/비대면 회의|
+|**협업 환경**|**• `Github Repository` :** Baseline 코드 공유 및 버전 관리, issue 페이지를 통하 실험 진행 <br>**• `Notion` :** STS 프로젝트 페이지를 통한 역할분담, 아이디어 브레인 스토밍, 대회관련 회의 내용 기록 <br>**• `SLACK, Zoom` :** 실시간 대면/비대면 회의|
 
 ## 📁 Project Structure
 ```
