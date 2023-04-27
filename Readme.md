@@ -111,6 +111,7 @@
  ┗ utils.py
  ```
 <br>
+
 ## 📐 Project Ground Rule
 >팀 협업을 위해 프로젝트 관련 Ground Rule을 설정하여 프로젝트가 원활하게 돌아갈 수 있도록 팀 규칙을 정했으며, 날짜 단위로 간략한 목표를 설정하여 협업을 원활하게 진행할 수 있도록 계획을 하여 진행했습니다.
 
@@ -119,6 +120,7 @@
 **-b. `Commit 관련 Ground Rule`** : `git commit & push`는 한번 `실험할 때` 마다 진행한다. `코드 수정 내용, 점수, 관련된 issue`가 들어가도록 commit하고 개인 branch에 push한다.
 
 **-c. `Submission 관련 Ground Rule:`** 각 사람별로 하루 submission 횟수는 `2회`씩 할당한다. 추가로 submission을 하고 싶으면 SLACK 단체 톡방에서 해당 날짜에 submission계획이 없는 혹은, 횟수가 남는 사람에게 물어봐서 여유가 된다면 추가 submission 가능하다.
+
 <br>
 
 ## 🗓️ Project Procedure
