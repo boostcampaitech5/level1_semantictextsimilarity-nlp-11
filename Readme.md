@@ -24,7 +24,7 @@
 ### 👨🏼‍💻 Members
 강민재|김주원|김태민|신혁준|윤상원|
 :-:|:-:|:-:|:-:|:-:
-<img src='https://avatars.githubusercontent.com/u/39152134?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/81630351?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/96530685?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/96534680?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/38793142?v=4' height=80 width=80px></img>
+<img src='https://avatars.githubusercontent.com/u/39152134?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/81630351?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/96530685?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/96534680?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/38793142?v=4' height=100 width=100></img>
 [Github](https://github.com/mjk0618)|[Github](https://github.com/Kim-Ju-won)|[Github](https://github.com/taemin6697)|[Github](https://github.com/jun048098)|[Github](https://github.com/SangwonYoon)
 <a href="mailto:kminjae618@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:uomnf97@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:taemin6697@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:jun048098@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:iandr0805@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|
 
@@ -45,7 +45,7 @@
 
 
 |**프로젝트 주제**| **`Semantic Text Similarity (STS)` :** 두 텍스트가 얼마나 유사한지 판단하는 NLP Task|
-| --- | --- |
+| :---: | --- |
 |**프로젝트 구현내용**| 1. Hugging Face의 Pretrained 모델과STS 데이터셋을 활용해 두 문장의 0과 5사이의 유사도를 측정하는 AI모델을 구축 <br>2. 리더보드 평가지표인 피어슨 상관 계수(Pearson Correlation Coefficient ,PCC)에서 높은 점수(1에 가까운 점수)에 도달할 수 있도록 데이터 전처리, 증강, 하이퍼 파라미터 튜닝을 진행|
 |**개발 환경**|**• `GPU` :** Tesla V100 서버 5개 (RAM32G) / K80, T4, and P100 랜덤 할당(RAM52G) /GeForce RTX 4090 로컬 (RAM 24GB), Rtx3060ti 8gb 로컬 2대 (RAM 8 GB)<br>**• `개발 Tool` :** PyCharm, Jupyter notebook, VS Code [서버 SSH연결], Colab Pro +, wandb |
 |**협업 환경**|**• `Github Repository` :** Baseline 코드 공유 및 버전 관리, issue 페이지를 통하 실험 진행 <br>**• `Notion` :** STS 프로젝트 페이지를 통한 역할분담, 아이디어 브레인 스토밍, 대회관련 회의 내용 기록 <br>**• `SLACK, Zoom` :** 실시간 대면/비대면 회의|
@@ -134,7 +134,7 @@
 
 ## ⚙️ Architecture
 |분류|내용|
-|--|--|
+|:--:|--|
 |모델|[`kykim/electra-kor-base`](https://huggingface.co/kykim/electra-kor-base), [`snunlp/KR-ELECTRA-discriminator`](https://huggingface.co/snunlp/KR-ELECTRA-discriminator), [`xlm-roberta-large`](https://huggingface.co/xlm-roberta-large)+ `HuggingFace Transformer Trainer`|
 |데이터|• `v1` : swap sentence, copied sentence 기법을 적용하여 레이블 불균형을 해소한 데이터셋<br>• `v2` : KorEDA의 Wordnet 활용하여 Synonym Replacement 기법으로 증강한 데이터셋|
 |검증 전략|• Evaluation 단계의 피어슨 상관 계수를 일차적으로 비교<br>• 기존 SOTA 모델과 성능이 비슷한 모델을 제출하여 public 점수를 확인하여 이차 검증|
