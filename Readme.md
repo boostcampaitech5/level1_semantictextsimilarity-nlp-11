@@ -110,7 +110,7 @@
  ┣ train.py
  ┗ utils.py
  ```
-
+<br>
 ## 📐 Project Ground Rule
 >팀 협업을 위해 프로젝트 관련 Ground Rule을 설정하여 프로젝트가 원활하게 돌아갈 수 있도록 팀 규칙을 정했으며, 날짜 단위로 간략한 목표를 설정하여 협업을 원활하게 진행할 수 있도록 계획을 하여 진행했습니다.
 
@@ -140,6 +140,8 @@
 |검증 전략|• Evaluation 단계의 피어슨 상관 계수를 일차적으로 비교<br>• 기존 SOTA 모델과 성능이 비슷한 모델을 제출하여 public 점수를 확인하여 이차 검증|
 |앙상블 방법|• 상기 3개의 모델 결과를 모아서 평균을 내는 방법으로 앙상블 수행|
 |모델 평가 및 개선 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|토크나이징 결과 분석을 통해 max_length를 수정하여 모델 학습 시간을 절반 가량 단축할 수 있었다. 다양한 증강 및 전처리 기법을 통해 label imbalance 문제를 해결하여 overfitting을 방지하고 성능을 크게 향상시켰다. 또한, HuggingFace Trainer와 wandb를 사용하여 여러 하이퍼파라미터를 한층 더 편리하고 효율적으로 관리할 수 있었다.|
+
+<br>
 ## 💻 Getting Started
 
 ### ⚠️  How To install Requirements
