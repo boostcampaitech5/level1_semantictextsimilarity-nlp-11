@@ -42,6 +42,15 @@ def seed_everything(seed: int) -> None:
     cudnn.benchmark = True
 
 
-def load_yaml(path):
+def load_yaml(path: str) -> dict:
+    """
+    모델 훈련, 예측에 사용할 yaml 파일을 불러오는 함수
+        Args:
+            path (str): 불러올 yaml 파일의 경로
+        Returns:
+            loaded_yaml (dict): 지정한 경로에서 불러온 yaml 파일 내용
+
+    """
     with open(path, "r") as f:
-        return yaml.load(f, Loader=yaml.FullLoader)
+        loaded_yaml = yaml.load(f, Loader=yaml.FullLoader)
+    return loaded_yaml
