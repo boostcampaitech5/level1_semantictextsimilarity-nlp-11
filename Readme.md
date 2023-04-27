@@ -9,6 +9,7 @@
 ![public_1st](https://img.shields.io/static/v1?label=Public%20LB&message=1st&color=yellow&logo=naver&logoColor=white") ![private_2nd](https://img.shields.io/static/v1?label=Private%20LB&message=2nd&color=silver&logo=naver&logoColor=white">)
 - 🥇 Public Leader Board
 <img width="1089" alt="public_leader_board" src="https://user-images.githubusercontent.com/81630351/234538736-4a1f4447-2aed-4187-9ac9-cf03cc65c507.png">
+
 - 🥈Private Leader Board 
 <img width="1089" alt="private_leader_board" src="https://user-images.githubusercontent.com/81630351/234539421-144d8ea6-a8ad-47c8-bee4-45c488ca4cfc.png">
 
@@ -106,14 +107,18 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 
 ### ⚠️ Requirements
 ```bash
-python=3.8
+python==3.8
+# version 2.0.0+cu117
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip install transformers
-pip install pandas
-pip install scipy
-pip install soynlp
+pip install transformers==4.28.1
+pip install pandas==1.5.3
+pip install scipy==1.10.1
+pip install soynlp==0.0.493
+# version 0.5
 pip install git+https://github.com/haven-jeon/PyKoSpacing.git
+# version 1.1
 pip install git+https://github.com/jungin500/py-hanspell
+# version 0.6.0
 pip install konlpy
 ```
 
