@@ -2,3 +2,6 @@ data/*
 model/*
 output/*
 esnb/*.DS_Store
+.vscode
+augmentation/*
+preprocessing/*
