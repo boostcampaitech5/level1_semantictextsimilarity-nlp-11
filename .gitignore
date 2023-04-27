@@ -1,4 +1,4 @@
 data/*
 model/*
 output/*
-esnb/*
+esnb/*.DS_Store

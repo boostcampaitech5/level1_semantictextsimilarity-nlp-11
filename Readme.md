@@ -1,18 +1,19 @@
 # 🏆 Level 1 Project :: STS(Semantic Text Similarity)
 
 ### 📜 Abstract
-> 부스트 캠프 AI-Tech 5기 NLP Level 1 기초 프로젝트 경진대회로, Dacon과 Kaggle과 유사항 방식으로 진행되었습니다. 두 문장이 의미적으로 얼마나 유사한지를 수치화하는 N21 자연어처리 Task인 의미 유사도 판별(Semantic Text Similarity, STS)를 주제로 하여 진행하습니다. 모든 팀원이 데이터 전처리부터 모델의 하이퍼파라미터 튜닝에 이르기까지 AI 모델링의 전과정을 모두가 End-to-End로 협업하는 것을 목표로 프로젝트를 진행했습니다. 
+> 부스트 캠프 AI-Tech 5기 NLP Level 1 기초 프로젝트 경진대회로, Dacon과 Kaggle과 유사항 대회형 방식으로 진행되었습니다. 두 문장이 의미적으로 얼마나 유사한지를 수치화하는 N21 자연어처리 Task인 의미 유사도 판별(Semantic Text Similarity, STS)를 주제로, 모든 팀원이 데이터 전처리부터 모델의 하이퍼파라미터 튜닝에 이르기까지 AI 모델링의 전과정을 모두가 End-to-End로 협업하는 것을 목표로 프로젝트를 진행했습니다. 
 
 <br>
 
 ## 🎖️Project Leader Board 
 ![public_1st](https://img.shields.io/static/v1?label=Public%20LB&message=1st&color=yellow&logo=naver&logoColor=white") ![private_2nd](https://img.shields.io/static/v1?label=Private%20LB&message=2nd&color=silver&logo=naver&logoColor=white">)
 - 🥇 Public Leader Board
-![Public Leader Board](./readme_img/public_leader_board.png)
-- 🥈Private Leader Board 
-![Private Leader Board](./readme_img/private_leader_board.png)
+<img width="1089" alt="public_leader_board" src="https://user-images.githubusercontent.com/81630351/234538736-4a1f4447-2aed-4187-9ac9-cf03cc65c507.png">
 
-- [📈 NLP 11조 Project Wrap-Up report 살펴보기](https://github.com/boostcampaitech5/level1_semantictextsimilarity-nlp-11/blob/main/wrap-up_report/NLP%2011%EC%A1%B0%20Wrap-Up%20%EB%B3%B4%EA%B3%A0%EC%84%9C_%ED%8C%80%EC%B5%9C%EC%A2%85.pdf)
+- 🥈Private Leader Board 
+<img width="1089" alt="private_leader_board" src="https://user-images.githubusercontent.com/81630351/234539421-144d8ea6-a8ad-47c8-bee4-45c488ca4cfc.png">
+
+- [📈 NLP 11조 Project Wrap-Up report 살펴보기](https://github.com/boostcampaitech5/level1_semantictextsimilarity-nlp-11/files/11331465/NLP.11.Wrap-Up._.pdf)
 
 <br>
 
@@ -25,7 +26,7 @@
 :-:|:-:|:-:|:-:|:-:
 <img src='https://avatars.githubusercontent.com/u/39152134?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/81630351?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/96530685?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/96534680?v=4' height=80 width=80px></img>|<img src='https://avatars.githubusercontent.com/u/38793142?v=4' height=80 width=80px></img>
 [Github](https://github.com/mjk0618)|[Github](https://github.com/Kim-Ju-won)|[Github](https://github.com/taemin6697)|[Github](https://github.com/jun048098)|[Github](https://github.com/SangwonYoon)
-kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.com|iandr0805@gmail.com
+<a href="mailto:kminjae618@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:uomnf97@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:taemin6697@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:jun048098@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:iandr0805@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|
 
 ### 🧑🏻‍🔧 Members' Role
 > 대부분의 팀원들이 첫 NLP 도메인의 프로젝트인만큼 명확한 기준을 가지고 업무를 구분한 것보다 다양한 인사이트를 기르기 위해 데이터 전처리부터 모델 튜닝까지 End-to-End로 경험하는 것을 목표로 하여 협업을 진행했습니다. 따라서 각자 튜닝할 모델을 할당하여 하이퍼 파라미터 튜닝을 하고 데이터 전처리, 증강 등 본인의 아이디어를 구현하되 서로의 내용이 겹치지 않도록 분업을 하여 프로젝트를 진행했습니다.
@@ -98,7 +99,7 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 
 *아래는 저희 프로젝트 진행과정을 담은 Gantt차트 입니다. 
 
-![img](./readme_img/road_map.png)
+![road_map](https://user-images.githubusercontent.com/81630351/234539749-d2f7423d-9895-4aeb-a458-4ae593bc4db8.png)
 
 <br>
 
@@ -106,15 +107,19 @@ kminjae618@gmail.com|kjwt1124@hufs.ac.kr|taemin6697@gmail.com|jun048098@gmail.co
 
 ### ⚠️ Requirements
 ```bash
-python=3.8
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip3 install transformers
-pip3 install pandas
-pip3 install scipy
-pip3 install soynlp
-pip3 install git+https://github.com/haven-jeon/PyKoSpacing.git
-pip3 install git+https://github.com/jungin500/py-hanspell
-pip3 install konlpy
+python==3.8
+# version 2.0.0+cu117
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+pip install transformers==4.28.1
+pip install pandas==1.5.3
+pip install scipy==1.10.1
+pip install soynlp==0.0.493
+# version 0.5
+pip install git+https://github.com/haven-jeon/PyKoSpacing.git
+# version 1.1
+pip install git+https://github.com/jungin500/py-hanspell
+# version 0.6.0
+pip install konlpy
 ```
 
 ### ⌨️ How To install Requirements
@@ -123,7 +128,7 @@ pip3 install konlpy
 pip install -r requirements.txt
 ```
 
-### ⌨️How To Train 
+### ⌨️ How To Train 
 ```bash
 # 데이터 증강
 python3 augmentation.py
@@ -132,7 +137,6 @@ python3 train.py
 ```
 
 ### ⌨️ How To Infer output.csv
-#예측 명령어 output.csv 생성
 ```bash
 # infer.py 코드 실행 : 훈련된 모델 load + sample_submission을 이용한 train 진행
 python3 infer.py 
