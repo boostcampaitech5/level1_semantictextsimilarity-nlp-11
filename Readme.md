@@ -51,6 +51,28 @@
 |**협업 환경**|**• `Github Repository` :** Baseline 코드 공유 및 버전 관리, issue 페이지를 통하 실험 진행 <br>**• `Notion` :** STS 프로젝트 페이지를 통한 역할분담, 아이디어 브레인 스토밍, 대회관련 회의 내용 기록 <br>**• `SLACK, Zoom` :** 실시간 대면/비대면 회의|
 
 ## 📁 Project Structure
+
+### 🗂️ 디렉토리 구조 설명
+- 학습 데이터 경로: `./data`
+- 공개 Pretrained 모델 기반으로 추가 Fine Tuning 학습을 한 파라미터 경로
+    - `./save_folder/kykim/checkpoint-7960`
+    - `./save_folder/snunlp/checkpoint-31824`
+    - `./save_folder/xlm_roberta_large/checkpoint-7960`
+- 학습 메인 코드: `./train.py`
+- 학습 데이터셋 경로: `./data/aug_train.csv`
+- 테스트 메인 코드: `./infer.py`
+- 테스트 데이터셋 경로: `./data/test.csv`
+
+### 📄 코드 구조 설명
+
+> 학습 진행하기 전 데이터 증강을 먼저 실행하여 학습 시간 단축
+
+- **데이터 증강** Get Augmentation Data : `augmentation.py`
+- **Train** : `train.py`
+- **Predict** : `infer.py`
+- **Ensemble** : `python esnb.py`
+- **최종 제출 파일** : `./esnb/esnb.csv`
+
 ```
 📦level1_semantictextsimilarity-nlp-11
  ┣ .gitignore
@@ -66,6 +88,13 @@
  ┃ ┗ test.csv
  ┣ wordnet
  ┃ ┗ wordnet.pickle
+ ┣ save_folde
+ ┃ ┣ kykim
+ ┃ ┃ ┗ checkpoint-7960
+ ┃ ┣ snunlp
+ ┃ ┃ ┗ checkpoint-31824
+ ┃ ┗ xlm_roberta_large
+ ┃   ┗ checkpoint-7960
  ┣ esnb
  ┃ ┗ esnb.csv
  ┣ output
@@ -107,9 +136,10 @@
 |분류|내용|
 |--|--|
 |모델|[`kykim/electra-kor-base`](https://huggingface.co/kykim/electra-kor-base)[`snunlp/KR-ELECTRA-discriminator`](https://huggingface.co/snunlp/KR-ELECTRA-discriminator), [`xlm-roberta-large`](https://huggingface.co/xlm-roberta-large)+ `HuggingFace Transformer Trainer`|
-|데이터|• v1 - swap sentence, copied sentence 기법을 적용하여 레이블 불균형을 해소한 데이터셋<br>• v2 - KorEDA의 Wordnet 활용하여 Synonym Replacement 기법으로 증강한 데이터셋|
-|검증 전략|• Evaluation 단계의 피어슨 상관 계수를 일차적으로 비교<br>
-• 기존 SOTA 모델과 성능이 비슷한 모델을 제출하여 public 점수를 확인하여 이차 검증|
+|데이터|• `v1` : swap sentence, copied sentence 기법을 적용하여 레이블 불균형을 해소한 데이터셋<br>• `v2` : KorEDA의 Wordnet 활용하여 Synonym Replacement 기법으로 증강한 데이터셋|
+|검증 전략|• Evaluation 단계의 피어슨 상관 계수를 일차적으로 비교<br>• 기존 SOTA 모델과 성능이 비슷한 모델을 제출하여 public 점수를 확인하여 이차 검증|
+|앙상블 방법|• 상기 3개의 모델 결과를 모아서 평균을 내는 방법으로 앙상블 수행|
+|모델 평가 및 개선|토크나이징 결과 분석을 통해 max_length를 수정하여 모델 학습 시간을 절반 가량 단축할 수 있었다. 다양한 증강 및 전처리 기법을 통해 label imbalance 문제를 해결하여 overfitting을 방지하고 성능을 크게 향상시켰다. 또한, HuggingFace Trainer와 wandb를 사용하여 여러 하이퍼파라미터를 한층 더 편리하고 효율적으로 관리할 수 있었다.|
 ## 💻 Getting Started
 
 ### ⚠️ Requirements
