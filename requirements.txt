@@ -3,6 +3,4 @@ transformers==4.28.1
 pandas==1.5.3
 scipy==1.10.1
 soynlp==0.0.493
-
-
 konlpy==0.6.0
