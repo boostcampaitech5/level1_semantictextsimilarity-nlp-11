@@ -103,6 +103,13 @@
 
 <br>
 
+## ⚙️ Architecture
+|분류|내용|
+|--|--|
+|모델|[`kykim/electra-kor-base`](https://huggingface.co/kykim/electra-kor-base)[`snunlp/KR-ELECTRA-discriminator`](https://huggingface.co/snunlp/KR-ELECTRA-discriminator), [`xlm-roberta-large`](https://huggingface.co/xlm-roberta-large)+ `HuggingFace Transformer Trainer`|
+|데이터|• v1 - swap sentence, copied sentence 기법을 적용하여 레이블 불균형을 해소한 데이터셋<br>• v2 - KorEDA의 Wordnet 활용하여 Synonym Replacement 기법으로 증강한 데이터셋|
+|검증 전략|• Evaluation 단계의 피어슨 상관 계수를 일차적으로 비교<br>
+• 기존 SOTA 모델과 성능이 비슷한 모델을 제출하여 public 점수를 확인하여 이차 검증|
 ## 💻 Getting Started
 
 ### ⚠️ Requirements
@@ -125,7 +132,10 @@ pip install konlpy
 ### ⌨️ How To install Requirements
 ```bash
 #필요 라이브러리 설치
+pip install git+https://github.com/haven-jeon/PyKoSpacing.git
+pip install git+https://github.com/jungin500/py-hanspell
 pip install -r requirements.txt
+sudo apt install default-jdk
 ```
 
 ### ⌨️ How To Train 
@@ -133,11 +143,17 @@ pip install -r requirements.txt
 # 데이터 증강
 python3 augmentation.py
 # train.py 코드 실행 : 모델 학습 진행
-python3 train.py
+# model_name을 kykim/electra-kor-base, snunlp/KR-ELECTRA-discriminator, xlm-roberta-large로 변경하며 train으로 학습
+python3 train.py # model_name = model_list[0]
+python3 train.py # model_name = model_list[1]
+python3 train.py # model_name = model_list[2]
 ```
 
 ### ⌨️ How To Infer output.csv
 ```bash
 # infer.py 코드 실행 : 훈련된 모델 load + sample_submission을 이용한 train 진행
-python3 infer.py 
+python3 infer.py # model_name = model_list[0]
+python3 infer.py # model_name = model_list[1]
+python3 infer.py # model_name = model_list[2]
+python3 esnb.py
 ```
