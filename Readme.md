@@ -24,7 +24,7 @@
 ### 👨🏼‍💻 Members
 강민재|김주원|김태민|신혁준|윤상원|
 :-:|:-:|:-:|:-:|:-:
-<img src='https://avatars.githubusercontent.com/u/39152134?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/81630351?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/96530685?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/96534680?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/38793142?v=4' height=120 width=120></img>
+<img src='https://avatars.githubusercontent.com/u/39152134?v=4' height=125 width=125></img>|<img src='https://avatars.githubusercontent.com/u/81630351?v=4' height=125 width=125></img>|<img src='https://avatars.githubusercontent.com/u/96530685?v=4' height=125 width=125></img>|<img src='https://avatars.githubusercontent.com/u/96534680?v=4' height=125 width=125></img>|<img src='https://avatars.githubusercontent.com/u/38793142?v=4' height=125 width=125></img>
 [Github](https://github.com/mjk0618)|[Github](https://github.com/Kim-Ju-won)|[Github](https://github.com/taemin6697)|[Github](https://github.com/jun048098)|[Github](https://github.com/SangwonYoon)
 <a href="mailto:kminjae618@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:uomnf97@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:taemin6697@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:jun048098@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:iandr0805@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|
 
@@ -32,7 +32,7 @@
 > 대부분의 팀원들이 첫 NLP 도메인의 프로젝트인만큼 명확한 기준을 가지고 업무를 구분한 것보다 다양한 인사이트를 기르기 위해 데이터 전처리부터 모델 튜닝까지 End-to-End로 경험하는 것을 목표로 하여 협업을 진행했습니다. 따라서 각자 튜닝할 모델을 할당하여 하이퍼 파라미터 튜닝을 하고 데이터 전처리, 증강 등 본인의 아이디어를 구현하되 서로의 내용이 겹치지 않도록 분업을 하여 프로젝트를 진행했습니다.
 
 | 이름 | 역할 |
-| --- | --- |
+| :---: | --- |
 | **`강민재`** | **모델 튜닝**(`electra-kor-base , koelectra-base-v3-discriminator`),**데이터 증강**(`back translation / switching sentence pair /임의글자삽입및제거`),**데이터 전처리 실험**(`레이블 정수화 및 노이즈추가`),**Ensemble 실험**(`output 평균, 표준편차활용`),**EDA**(`글자수 기반 데이터 분포 분석`) |
 | **`김태민`** | **Hugging Face 기반 Baseline 코드 작성** , **Task에 적합한 모델 Search 및 분배** , **모델 실험 총괄** , **데이터 전처리 실험**(`Random Token Masking , Label Random Noise, Fill Random Token Mask, Source Tagging`), **Custom Loss 실험**(`Binary Cross Entropy + Focal Loss`),**모델 튜닝**(`xlm-roberta-large, electra-kor-base`),**모델 Ensemble** |
 | **`김주원`** | **모델 튜닝**(`kobigbird-bert-base, electra-kor-base`),**EDA**(`라벨 분포 데이터분석`),**EDA 기반 데이터 증강 아이디어 제시** , **데이터 증강**(`Easy Augmented DataSR 증강`),**팀 협업 프로세스 관리**(`Github 팀관리+ 팀 Notion 페이지관리`) ,**Custom Loss 실험**(`RMSE`) |
