@@ -12,9 +12,9 @@ seed: 43
 
 # Model
 checkpoint:
-  xlm_robberta_large: xlm-roberta-large/checkpoint-number
-  snunlp: snunlp/checkpoint-number
-  kykim: kykim/checkpoint-number
+  xlm_robberta_large: xlm-roberta-large/checkpoint-7960
+  snunlp: snunlp/checkpoint-31824
+  kykim: kykim/checkpoint-7960
 
 # Trainer
 batch_size: 4
@@ -24,4 +24,3 @@ data_folder:
   train_data: ./data/train.csv
   val_data: ./data/val.csv
   test_data: ./data/test.csv
-
