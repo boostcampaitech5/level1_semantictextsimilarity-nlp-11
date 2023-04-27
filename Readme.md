@@ -24,7 +24,7 @@
 ### 👨🏼‍💻 Members
 강민재|김주원|김태민|신혁준|윤상원|
 :-:|:-:|:-:|:-:|:-:
-<img src='https://avatars.githubusercontent.com/u/39152134?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/81630351?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/96530685?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/96534680?v=4' height=100 width=100></img>|<img src='https://avatars.githubusercontent.com/u/38793142?v=4' height=100 width=100></img>
+<img src='https://avatars.githubusercontent.com/u/39152134?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/81630351?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/96530685?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/96534680?v=4' height=120 width=120></img>|<img src='https://avatars.githubusercontent.com/u/38793142?v=4' height=120 width=120></img>
 [Github](https://github.com/mjk0618)|[Github](https://github.com/Kim-Ju-won)|[Github](https://github.com/taemin6697)|[Github](https://github.com/jun048098)|[Github](https://github.com/SangwonYoon)
 <a href="mailto:kminjae618@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:uomnf97@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:taemin6697@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:jun048098@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|<a href="mailto:iandr0805@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a>|
 
@@ -37,7 +37,7 @@
 | **`김태민`** | **Hugging Face 기반 Baseline 코드 작성** , **Task에 적합한 모델 Search 및 분배** , **모델 실험 총괄** , **데이터 전처리 실험**(`Random Token Masking , Label Random Noise, Fill Random Token Mask, Source Tagging`), **Custom Loss 실험**(`Binary Cross Entropy + Focal Loss`),**모델 튜닝**(`xlm-roberta-large, electra-kor-base`),**모델 Ensemble** |
 | **`김주원`** | **모델 튜닝**(`kobigbird-bert-base, electra-kor-base`),**EDA**(`라벨 분포 데이터분석`),**EDA 기반 데이터 증강 아이디어 제시** , **데이터 증강**(`Easy Augmented DataSR 증강`),**팀 협업 프로세스 관리**(`Github 팀관리+ 팀 Notion 페이지관리`) ,**Custom Loss 실험**(`RMSE`) |
 | **`윤상원`** | **모델 튜닝**(`koelectra-base-finetuned-nsmc, KR-ELECTRA-discriminator 모델튜닝`),**데이터 증강**(`label rescaling, 단순복제데이터증강, 어순도치데이터증강, under sampling + swap sentence + copied sentence + uniform distribution + random noise`),**모델 Ensemble** |
-| **`신혁준`** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | **모델 튜닝**(`KR-ELECTRA-discriminator, mdeberta-v3-base-kor-further`)**데이터 증강**(`맞춤법교정증강,EDA(Easy Data Augmentation) SR(Synonym Replacement)품사선택(명사, 조사) 교체+ swap sentence + copied sentence, Data Distribution`),**데이터 전처리 실험**(`맞춤법교정`) |
+| **`신혁준`** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | **모델 튜닝**(`KR-ELECTRA-discriminator, mdeberta-v3-base-kor-further`)**데이터 증강**(`맞춤법교정증강,EDA(Easy Data Augmentation) SR(Synonym Replacement)품사선택(명사, 조사) 교체+ swap sentence + copied sentence, Data Distribution`),**데이터 전처리 실험**(`맞춤법교정`) |
 
 <br>
 
@@ -144,6 +144,7 @@
 |모델 평가 및 개선 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|토크나이징 결과 분석을 통해 max_length를 수정하여 모델 학습 시간을 절반 가량 단축할 수 있었다. 다양한 증강 및 전처리 기법을 통해 label imbalance 문제를 해결하여 overfitting을 방지하고 성능을 크게 향상시켰다. 또한, HuggingFace Trainer와 wandb를 사용하여 여러 하이퍼파라미터를 한층 더 편리하고 효율적으로 관리할 수 있었다.|
 
 <br>
+
 ## 💻 Getting Started
 
 ### ⚠️  How To install Requirements
